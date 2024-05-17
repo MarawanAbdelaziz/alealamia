@@ -8,6 +8,7 @@ import Home from './pages/Home/Home'
 import ProtectedRoute from './pages/ProtectedRoute/ProtectedRoute'
 import ChangePassword from './pages/ChangePassword/ChangePassword'
 import LoginAdmin from './pages/auth/LoginAdmin'
+import CustomerDetails from './pages/Customers/CustomerDetails/CustomerDetails'
 // import ProtectedRoute from './pages/ProtectedRoute/ProtectedRoute'
 
 function App() {
@@ -35,6 +36,10 @@ function App() {
         {
           path: '/customers',
           element: <Customers />
+        },
+        {
+          path: '/customerdetails',
+          element: <CustomerDetails />
         },
         {
           path: '/changepassword',

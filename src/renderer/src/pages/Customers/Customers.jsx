@@ -10,7 +10,7 @@ function Customers() {
   const [showOrAdd, setShowOrAdd] = useState(true)
 
   return (
-    <div className="">
+    <div className="h-screen">
       <BackButtoon data={'/'} />
 
       <div className="w-[80%] mx-auto mb-5">

@@ -9,11 +9,9 @@ function Login() {
   }
 
   const [password, setPassword] = useState('')
-  const storedPassword = localStorage.getItem('password')
-  const home = useStore((state) => state.home)
-  const goToHome = useStore((state) => state.goToHome)
-
   const [errorMassage, seterrorMassage] = useState(false)
+  const storedPassword = localStorage.getItem('password')
+  const goToHome = useStore((state) => state.goToHome)
   const navigate = useNavigate()
 
   function checkPassword() {

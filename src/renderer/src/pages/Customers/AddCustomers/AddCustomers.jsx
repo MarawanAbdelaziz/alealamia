@@ -6,20 +6,10 @@ import Swal from 'sweetalert2'
 import { object, string } from 'yup'
 import { useStore } from '../../../store/useStore'
 
-// const customers = [
-//   {
-//     customer_id: 1,
-//     name: 'tarek',
-//     phone: '01114996232'
-//   }
-// ]
-// localStorage.setItem('customers', JSON.stringify(customers))
-
 function AddCustomers() {
-  let customers = JSON.parse(localStorage.getItem('customers'))
-  const showOrAdd = useStore((state) => state.showOrAdd)
+  const [customers, setCustomers] = useState(JSON.parse(localStorage.getItem('customers')) || [])
+  const [randomNum, setRandomNum] = useState()
 
-  const [errorMeassge, setErrorMeassge] = useState(false)
   const validationSchema = object().shape({
     name: string().required('متسبش الاسم فاضي'),
     phone: string()
@@ -38,11 +28,26 @@ function AddCustomers() {
     }
   })
 
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min
+  }
+
+  function randomFun() {
+    let uniqueRandomNum
+    do {
+      uniqueRandomNum = randomInt(1, customers.length + 2)
+    } while (customers.some((customer) => customer.customer_id === uniqueRandomNum))
+    setRandomNum(uniqueRandomNum)
+  }
+
+  useEffect(() => {
+    randomFun()
+  }, [])
+
   const onSubmit = (data) => {
     const sameName = customers.filter((customer) => customer.name == data.name)
     if (sameName.length == 0) {
-      customers = JSON.parse(localStorage.getItem('customers'))
-      const newData = { customer_id: customers.length + 1, ...data }
+      const newData = { customer_id: randomNum, ...data }
       customers.push(newData)
       localStorage.setItem('customers', JSON.stringify(customers))
       console.log('Local :', JSON.parse(localStorage.getItem('customers')))
@@ -54,25 +59,29 @@ function AddCustomers() {
         timer: 1500
       })
     } else if (sameName.length > 0) {
-      setErrorMeassge(true)
+      Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'الاسم الي بتحاول تدخله موجود قبل كدا',
+        showConfirmButton: false,
+        timer: 1500
+      })
     }
+    randomFun()
   }
 
   return (
     <div className="my-10 mx-5 text-center md:h-[64vh] lg:h-[77.6vh]">
       <form className="" onSubmit={handleSubmit(onSubmit)}>
         <h2 className="mb-7 text-2xl">عميل جديد</h2>
-        {errors.name || errors.phone || errorMeassge ? (
-          <div className="border w-[300px] text-center mx-auto border-red-600 rounded-md py-2 px-4 mb-5">
-            {errorMeassge && <p className="mb-2">الاسم الي بتحاول تدخله موجود قبل كدا </p>}
-            {errors.name && <p className="mb-2">{errors.name.message}</p>}
-            {errors.phone && <p className="mb-2">{errors.phone.message}</p>}
-          </div>
-        ) : (
-          ''
-        )}
+        <p
+          className={`border  w-fit  mx-auto border-red-600 rounded-md py-2 px-4 mb-5 ${errors?.name || errors?.phone ? 'block' : 'hidden'} `}
+        >
+          {errors?.name?.message}
+          {errors?.phone?.message}
+        </p>
         <div className="grid gap-5">
-          <h4 className=""> كود العميل الجديد : {customers ? customers?.length + 1 : '1'}</h4>
+          <h4 className=""> كود العميل الجديد : {randomNum}</h4>
           <input
             className={`py-2 px-3 w-[50%] mx-auto focus:outline-none bg-transparent ${errors.name && 'border-red-600'} border rounded-md placeholder:text-white`}
             placeholder="اسم العميل"
@@ -85,7 +94,6 @@ function AddCustomers() {
             type="number"
             {...register('phone')}
           />
-
           <button
             disabled={errors.name ? true : false}
             className={` ${errors.name ? 'border-gray-500 text-gray-500' : ''} mx-auto py-2 px-2 border rounded-md`}

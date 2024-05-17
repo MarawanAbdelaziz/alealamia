@@ -3,45 +3,40 @@ import BackButton from '../../components/BackButtoon'
 
 function ChangePassword() {
   const [OldPassword, setOldPassword] = useState('')
-  const Password = localStorage.getItem('password')
-
-  const [checkOldPassword, setCheckOldPassword] = useState('empty')
-
   const [newPassword, setNewPassword] = useState('')
   const [newMessage, setNewMessage] = useState('empty')
+  const [checkOldPassword, setCheckOldPassword] = useState('empty')
+  const Password = localStorage.getItem('password')
 
   function submitB() {
     if (newPassword == '') {
       setNewMessage(false)
     } else if (OldPassword == Password) {
-      setCheckOldPassword(true)
       localStorage.setItem('password', newPassword)
+      setCheckOldPassword(true)
       setNewMessage(true)
-      console.log(localStorage.getItem('password'))
     } else {
       setCheckOldPassword(false)
       setNewMessage(false)
     }
   }
 
+  const renderMessage = () => {
+    if (newMessage === 'empty') return null
+    return (
+      <div className="w-[300px] lg:w-[400px] ">
+        <h2 className="text-xl text-center mb-10 lg:mb-16">
+          {newMessage ? 'تم تغير رمز الدخول بنجاح' : 'متسبش رمز الدخول فاضي او الباسورد القديم غلط'}
+        </h2>
+      </div>
+    )
+  }
+
   return (
     <div className="h-screen flex justify-center items-center">
       <BackButton data={'/'} />
       <div>
-        {newMessage == 'empty' ? (
-          ''
-        ) : newMessage ? (
-          <div className="w-[300px] lg:w-[400px] ">
-            <h2 className="text-3xl text-center mb-10 lg:mb-16"> تم تغير رمز الدخول بنجاح</h2>
-          </div>
-        ) : (
-          <div className="w-[300px] lg:w-[400px] ">
-            <h2 className="text-xl text-center mb-10 lg:mb-16">
-              {' '}
-              متسبش رمز الدخول فاضي او الباسورد القديم غلط
-            </h2>
-          </div>
-        )}
+        {renderMessage}
         <div className=" w-[300px] h-[480px] lg:w-[400px] lg:h-[500px] rounded-lg  shadow-[0_10px_35px_-10px_rgba(255,255,255,1)] text-center  ">
           <h2 className="my-10 text-3xl pt-16 lg:pt-20">قم بتسجيل دخولك</h2>
           <div className="grid grid-cols-1 gap-10">

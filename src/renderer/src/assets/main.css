@@ -17,3 +17,23 @@ body {
     -moz-appearance: textfield !important;
   }
 }
+
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: white;
+  border-radius: 5px;
+  min-height: 10px;
+
+}

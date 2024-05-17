@@ -5,10 +5,8 @@ import { useNavigate } from 'react-router-dom'
 
 function LoginAdmin() {
   const [password, setPassword] = useState('')
-
-  const goToHome = useStore((state) => state.goToHome)
-
   const [errorMassage, seterrorMassage] = useState(false)
+  const goToHome = useStore((state) => state.goToHome)
   const navigate = useNavigate()
 
   function checkPassword() {
