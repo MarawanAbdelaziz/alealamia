@@ -25,8 +25,8 @@ function ShowCustomers() {
           ?.filter((customer) => customer.name.toLowerCase().includes(search.toLocaleLowerCase()))
           .map((customer) => (
             <div dir="rtl" key={customer.customer_id} className="border my-5 mx-3 flex py-4 px-4">
-              <h3 className=" me-11">كود العميل: {customer.customer_id}</h3>
-              <h3 className=" me-auto">اسم العميل: {customer.name}</h3>
+              <h3 className=" me-11">كود : {customer.customer_id}</h3>
+              <h3 className=" me-auto">اسم : {customer.name}</h3>
               <Link
                 to={'/customerdetails'}
                 state={{ customer_id: customer.customer_id }}

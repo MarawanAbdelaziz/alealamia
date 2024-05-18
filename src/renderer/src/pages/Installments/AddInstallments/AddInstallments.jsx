@@ -4,16 +4,18 @@ import BackButtoon from '../../../components/BackButtoon'
 import { object, string } from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import Swal from 'sweetalert2'
 
 function AddInstallments() {
   const [customers, setCustomers] = useState(JSON.parse(localStorage.getItem('customers')) || [])
   const [customerId, setCustomerId] = useState()
   const [installmentPeriodId, setInstallmentPeriodId] = useState()
-  const [itemPrice, setItemPrice] = useState()
   const [total, setTotal] = useState()
   const [amountPerMonth, setAmountPerMonth] = useState()
   const [currentDate, setCurrentDate] = useState('')
   const [search, setSearch] = useState('')
+  const [errorCode, setErrorCode] = useState(false)
+  const [randomNum, setRandomNum] = useState()
 
   const now = new Date()
   const year = now.getFullYear()
@@ -28,6 +30,26 @@ function AddInstallments() {
     { period: 15, profit: '%30', profitRatio: 1.3 },
     { period: 20, profit: '%40', profitRatio: 1.4 }
   ]
+
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min
+  }
+  function randomFun() {
+    let uniqueRandomNum
+
+    if (customers[customerId]?.installments != null) {
+      do {
+        uniqueRandomNum = randomInt(1, customers[customerId]?.installments.length + 2)
+      } while (
+        customers[customerId]?.installments.some(
+          (installment) => installment.installment_id === uniqueRandomNum
+        )
+      )
+      setRandomNum(uniqueRandomNum)
+    } else {
+      setRandomNum(1)
+    }
+  }
 
   function getCustomer(id) {
     setCustomerId(customers.findIndex((customer) => customer.customer_id == id))
@@ -53,12 +75,16 @@ function AddInstallments() {
 
   useEffect(() => {
     setCurrentDate(formattedDate)
+    randomFun()
   }, [])
 
-  // const validationSchema = object().shape({
-  //   name: string().required('متسبش الاسم فاضي'),
-  //   phone: string()
-  // })
+  const validationSchema = object().shape({
+    installmentName: string().required('متسبش اسم القسط'),
+    itemName: string().required('متسبش اسم السلعه'),
+    itemPrice: string().required('متسبش سعر السلعه'),
+    installmentPeriod: string().required('متسبش فترة القسط'),
+    payday: string().required('متنساش اليوم')
+  })
   const {
     getValues,
     setValue,
@@ -67,7 +93,7 @@ function AddInstallments() {
     handleSubmit,
     formState: { errors }
   } = useForm({
-    // resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema),
     defaultValues: {
       installmentName: '',
       itemName: '',
@@ -86,8 +112,27 @@ function AddInstallments() {
   })
 
   const onSubmit = (data) => {
-    console.log('Form submitted')
-    console.log(data)
+    const newData = { installment_id: randomNum, ...data }
+
+    if (customerId != null) {
+      if (customers[customerId].installments == null) {
+        customers[customerId].installments = [newData]
+      } else {
+        customers[customerId].installments = [...customers[customerId].installments, newData]
+      }
+      setErrorCode(false)
+      console.log(customers)
+      localStorage.setItem('customers', JSON.stringify(customers))
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'تم انشاء قسط جديد بنجاح',
+        showConfirmButton: false,
+        timer: 1500
+      })
+    } else {
+      setErrorCode(true)
+    }
   }
 
   useEffect(() => {
@@ -113,10 +158,14 @@ function AddInstallments() {
             قسط جديد
           </h2>
           <p
-            className={`border w-fit  mx-auto border-red-600 rounded-md py-2 px-4 mb-5 {errors?.name || errors?.phone ? 'block' : 'hidden'} `}
+            className={`border w-fit mx-auto border-red-600 rounded-md py-2 px-4 mb-5 ${(customerId == null && errorCode) || errors?.installmentName || errors?.itemName || errors?.itemPrice || errors?.installmentPeriod || errors?.payday ? 'block' : 'hidden'} `}
           >
-            {/* {errors?.name?.message}
-              {errors?.phone?.message} */}
+            <h4>{errors?.installmentName?.message}</h4>
+            <h4>{errors?.itemName?.message}</h4>
+            <h4>{errors?.itemPrice?.message}</h4>
+            <h4>{errors?.installmentPeriod?.message}</h4>
+            <h4>{errors?.payday?.message}</h4>
+            {customerId == null && errorCode && <h4>متنساش تختار عميل</h4>}
           </p>
           <form className="" onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-5 w-[60%] mx-auto text-right">
@@ -129,7 +178,7 @@ function AddInstallments() {
               <div className="flex ">
                 <h3> اختار اسم العميل : </h3>
                 <select
-                  className="ms-4 px-2 py-1 bg-transparent border w-[40%] rounded-md focus:outline-none"
+                  className={`ms-4 px-2 py-1 bg-transparent border ${customerId == null && errorCode && 'border-red-600'} w-[40%] rounded-md focus:outline-none`}
                   onChange={(e) => {
                     getCustomer(e.target.value)
                   }}
@@ -162,19 +211,19 @@ function AddInstallments() {
                   : ' 0'}
               </h4>
               <input
-                className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent {errors.name && 'border-red-600'} border rounded-md placeholder:text-white`}
+                className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent ${errors?.installmentName && 'border-red-600'} border rounded-md placeholder:text-white`}
                 placeholder="اسم القسط"
                 type="text"
                 {...register('installmentName')}
               />
               <input
-                className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent {errors.name && 'border-red-600'} border rounded-md placeholder:text-white`}
+                className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent ${errors?.itemName && 'border-red-600'} border rounded-md placeholder:text-white`}
                 placeholder="اسم السلعه"
                 type="text"
                 {...register('itemName')}
               />
               <input
-                className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent {errors.name && 'border-red-600'} border rounded-md placeholder:text-white`}
+                className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent ${errors?.itemPrice && 'border-red-600'} border rounded-md placeholder:text-white`}
                 placeholder="سعر السلعه"
                 type="number"
                 {...register('itemPrice')}
@@ -183,7 +232,7 @@ function AddInstallments() {
               <div className="flex">
                 <h3>فترة القسط : </h3>
                 <select
-                  className="ms-4 px-2 py-1 bg-transparent border rounded-md focus:outline-none"
+                  className={`ms-4 px-2 py-1 bg-transparent border ${errors?.installmentPeriod && 'border-red-600'} rounded-md focus:outline-none`}
                   name="names"
                   id="names"
                   defaultValue=""
@@ -228,7 +277,7 @@ function AddInstallments() {
               <div className="flex ">
                 <h3> يوم الدفع : </h3>
                 <select
-                  className="ms-4 px-2 py-1 bg-transparent border rounded-md focus:outline-none"
+                  className={`ms-4 px-2 py-1 bg-transparent border ${errors?.payday && 'border-red-600'} rounded-md focus:outline-none`}
                   name="names"
                   id="names"
                   defaultValue=""
@@ -255,33 +304,33 @@ function AddInstallments() {
                 />
               </div>
               <input
-                className={`py-2 px-3  me-auto focus:outline-none bg-transparent  {errors.phone && 'border-red-600'} border rounded-md placeholder:text-white`}
+                className={`py-2 px-3  me-auto focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
                 placeholder="اسم الضامن الاول"
                 type="text"
                 {...register('firstGuarantor')}
               />
 
               <input
-                className={`py-2 px-3  me-auto focus:outline-none bg-transparent  {errors.phone && 'border-red-600'} border rounded-md placeholder:text-white`}
+                className={`py-2 px-3  me-auto focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
                 placeholder="اسم الضامن الثاني"
                 type="text"
                 {...register('secondGuarantor')}
               />
               <input
-                className={`py-2 px-3  me-auto focus:outline-none bg-transparent  {errors.phone && 'border-red-600'} border rounded-md placeholder:text-white`}
+                className={`py-2 px-3  me-auto focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
                 placeholder="اسم الضامن الثالث"
                 type="text"
                 {...register('thirdGuarantor')}
               />
               <input
-                className={`py-2 px-3  me-auto focus:outline-none bg-transparent  {errors.phone && 'border-red-600'} border rounded-md placeholder:text-white`}
+                className={`py-2 px-3  me-auto focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
                 placeholder="اسم الضامن الرابع"
                 type="text"
                 {...register('fourthGuarantor')}
               />
               <button
                 // disabled={errors.name ? true : false}
-                className={`mb-20 {errors.name ? 'border-gray-500 text-gray-500' : ''} mx-auto py-2 px-2 border rounded-md`}
+                className={`mb-20 ${errors?.installmentName || errors?.itemName || errors?.itemPrice || errors?.installmentPeriod || errors?.payday ? 'border-gray-500 text-gray-500' : ''} mx-auto py-2 px-2 border rounded-md`}
                 type="submit"
               >
                 ضيف قسط جديد
