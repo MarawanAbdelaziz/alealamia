@@ -15,6 +15,12 @@ function AddInstallments() {
   const [currentDate, setCurrentDate] = useState('')
   const [search, setSearch] = useState('')
 
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const formattedDate = `${year}-${month}-${day}`
+
   const Paydays = [1, 5, 10, 15, 20, 25]
   const installmentPeriods = [
     { period: 5, profit: '%10', profitRatio: 1.1 },
@@ -46,11 +52,6 @@ function AddInstallments() {
   }
 
   useEffect(() => {
-    const now = new Date()
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    const formattedDate = `${year}-${month}-${day}`
     setCurrentDate(formattedDate)
   }, [])
 
@@ -98,6 +99,8 @@ function AddInstallments() {
   useEffect(() => {
     if (watch('dateOfPurchase')) {
       setCurrentDate(watch('dateOfPurchase'))
+    } else {
+      setValue('dateOfPurchase', formattedDate)
     }
   }, [watch('dateOfPurchase')])
 
@@ -174,7 +177,6 @@ function AddInstallments() {
                 className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent {errors.name && 'border-red-600'} border rounded-md placeholder:text-white`}
                 placeholder="سعر السلعه"
                 type="number"
-                // onChange={(e) => setItemPrice(e.target.value)}
                 {...register('itemPrice')}
               />
 
@@ -182,7 +184,6 @@ function AddInstallments() {
                 <h3>فترة القسط : </h3>
                 <select
                   className="ms-4 px-2 py-1 bg-transparent border rounded-md focus:outline-none"
-                  // onChange={(e) => getInstallmentPeriods(e.target.value)}
                   name="names"
                   id="names"
                   defaultValue=""
