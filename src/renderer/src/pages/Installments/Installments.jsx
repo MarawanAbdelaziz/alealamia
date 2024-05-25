@@ -9,7 +9,7 @@ function Installments() {
         <div>
           <Link
             className="block mb-6 text-2xl xl:text-4xl   border py-2 px-4 xl:py-4 xl:px-8 rounded-lg "
-            to={'/'}
+            to={'/drawer'}
           >
             الدرج
           </Link>

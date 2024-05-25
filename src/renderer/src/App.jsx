@@ -10,6 +10,7 @@ import ChangePassword from './pages/ChangePassword/ChangePassword'
 import LoginAdmin from './pages/auth/LoginAdmin'
 import CustomerDetails from './pages/Customers/CustomerDetails/CustomerDetails'
 import AddInstallments from './pages/Installments/AddInstallments/AddInstallments'
+import Drawer from './pages/Installments/Drawer/Drawer'
 // import ProtectedRoute from './pages/ProtectedRoute/ProtectedRoute'
 
 function App() {
@@ -29,6 +30,10 @@ function App() {
         {
           path: '/installments',
           element: <Installments />
+        },
+        {
+          path: '/drawer',
+          element: <Drawer />
         },
         {
           path: '/addinstallments',
