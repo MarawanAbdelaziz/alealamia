@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react'
-import BackButtoon from '../../../components/BackButtoon'
 import { object, string } from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -159,10 +158,8 @@ function AddInstallments() {
   }, [watch('dateOfPurchase')])
 
   return (
-    <div className="bg-custom">
-      <BackButtoon data={'/installments'} />
-
-      <div className="pt-20  mx-5 text-center">
+    <div className="">
+      <div className="mt-10  mx-5 text-center">
         <h2 htmlFor="names" className="mb-7 text-2xl">
           قسط جديد
         </h2>
@@ -177,7 +174,7 @@ function AddInstallments() {
           {customerId == null && errorCode && <h4>متنساش تختار عميل</h4>}
         </div>
         <form className="" onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-5 w-[60%] mx-auto text-right">
+          <div className="grid gap-5 w-[60%] ms-28 text-right">
             <input
               className={`py-0.5 px-3 ma-auto w-fit block mb-1 text-right focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
               placeholder="ابحث عن العميل"
