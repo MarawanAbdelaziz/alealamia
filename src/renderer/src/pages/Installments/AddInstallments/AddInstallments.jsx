@@ -95,6 +95,7 @@ function AddInstallments() {
       installmentName: '',
       itemName: '',
       itemPrice: '',
+      downPayment: '',
       installmentPeriod: '',
       countMonths: '',
       profitRatio: '',
@@ -227,6 +228,12 @@ function AddInstallments() {
               placeholder="سعر السلعه"
               type="number"
               {...register('itemPrice')}
+            />
+            <input
+              className={`py-2 px-3 w-[50%] me-auto focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
+              placeholder="مقدم"
+              type="number"
+              {...register('downPayment')}
             />
 
             <div className="flex">

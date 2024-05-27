@@ -9,6 +9,7 @@ import ProtectedRoute from './pages/ProtectedRoute/ProtectedRoute'
 import ChangePassword from './pages/ChangePassword/ChangePassword'
 import LoginAdmin from './pages/auth/LoginAdmin'
 import CustomerDetails from './pages/Customers/CustomerDetails/CustomerDetails'
+import DrawerDetails from './pages/Installments/DrawerDetails/DrawerDetails'
 
 // import ProtectedRoute from './pages/ProtectedRoute/ProtectedRoute'
 
@@ -29,6 +30,10 @@ function App() {
         {
           path: '/installments',
           element: <Installments />
+        },
+        {
+          path: '/drawerdetails',
+          element: <DrawerDetails />
         },
         {
           path: '/reports',

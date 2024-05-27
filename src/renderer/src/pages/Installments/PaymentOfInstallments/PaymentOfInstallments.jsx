@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Swal from 'sweetalert2'
@@ -8,6 +9,18 @@ function PaymentOfInstallments() {
   const [customerId, setCustomerId] = useState()
   const [installmentId, setInstallmentId] = useState()
   const [search, setSearch] = useState('')
+  const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
+  const [currentDay, setCurrentDay] = useState('')
+  const [firstDay, setFirstDay] = useState(JSON.parse(localStorage.getItem('firstDay')) || '')
+  const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
+  const [randomNum, setRandomNum] = useState()
+  const [currentDate, setCurrentDate] = useState('')
+
+  const now = new Date()
+  const day = String(now.getDate()).padStart(2, '0')
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const year = now.getFullYear()
+  const formattedDate = `${year}-${month}-${day}`
 
   useEffect(() => {
     const storedCustomers = JSON.parse(localStorage.getItem('customers')) || []
@@ -16,7 +29,32 @@ function PaymentOfInstallments() {
       (customer) => customer.installments && customer.installments.length > 0
     )
     setCustomersWithInstallments(filteredCustomers)
+    setCurrentDay(day)
+    if (firstDay == '') {
+      setFirstDay(day)
+    }
+    if (newDay == '') {
+      setNewDay(Number(day) + 1)
+    }
+    randomFun()
+    setCurrentDate(formattedDate)
   }, [])
+
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min
+  }
+
+  function randomFun() {
+    let uniqueRandomNum
+    do {
+      uniqueRandomNum = randomInt(1, drawers.length + 2)
+    } while (drawers.some((drawer) => drawer.drawer_id === uniqueRandomNum))
+    setRandomNum(uniqueRandomNum)
+  }
+
+  useEffect(() => {
+    randomFun()
+  }, [drawers])
 
   function getCustomer(id) {
     const newId = customersWithInstallments.findIndex((customer) => customer.customer_id == id)
@@ -31,6 +69,44 @@ function PaymentOfInstallments() {
   }
 
   const installments = customersWithInstallments[customerId]?.installments[installmentId]
+
+  let data = { mero: 'ssads' }
+
+  function putDrawers() {
+    const installment = []
+    console.log('here')
+    if (currentDay == firstDay) {
+      if (drawers.length == 0) {
+        installment.push(data)
+        const newData = { installment: installment }
+        const newData1 = { day_id: randomNum, date: currentDate, ...newData }
+        drawers.push(newData1)
+      } else if (!drawers[drawers.length - 1]?.installment) {
+        installment.push(data)
+
+        drawers[drawers.length - 1].installment = installment
+      } else {
+        drawers[drawers.length - 1]?.installment.push(data)
+      }
+      localStorage.setItem('firstDay', JSON.stringify(currentDay))
+      localStorage.setItem('drawers', JSON.stringify(drawers))
+    } else if (currentDay == newDay) {
+      localStorage.setItem('newDay', JSON.stringify(newDay + 1))
+      setNewDay(newDay + 1)
+      installment.push(data)
+      const newData = { installment: installment }
+      const newData1 = { day_id: randomNum, date: currentDate, ...newData }
+      drawers.push(newData1)
+    } else if (!drawers[drawers.length - 1]?.installment) {
+      installment.push(data)
+
+      drawers[drawers.length - 1].dinstallmentrawer = installment
+    } else {
+      drawers[drawers.length - 1]?.installment.push(data)
+    }
+    localStorage.setItem('drawers', JSON.stringify(drawers))
+    console.log(drawers)
+  }
 
   function payNowBtn() {
     const customer = customers[customerId]
@@ -50,6 +126,7 @@ function PaymentOfInstallments() {
         showConfirmButton: false,
         timer: 2000
       })
+      putDrawers()
     } else {
       Swal.fire({
         position: 'center',
@@ -64,6 +141,7 @@ function PaymentOfInstallments() {
   const { watch, register, handleSubmit } = useForm({
     defaultValues: { amountPerMonth: '' }
   })
+
   const amountPerMonth =
     customers[customerId]?.installments[installmentId]?.installmentMonths[installments.countMonths]
       ?.amountPerMonth
@@ -113,6 +191,7 @@ function PaymentOfInstallments() {
           showConfirmButton: false,
           timer: 2000
         })
+        putDrawers()
       } else {
         if (
           parseFloat(
@@ -128,6 +207,7 @@ function PaymentOfInstallments() {
             showConfirmButton: false,
             timer: 4000
           })
+          putDrawers()
         } else {
           customers[customerId].installments[installmentId].installmentMonths[
             installments.countMonths
@@ -151,9 +231,7 @@ function PaymentOfInstallments() {
   return (
     <div>
       <div className="mt-10  mx-5 text-center">
-        <h2 htmlFor="names" className="mb-7 text-2xl">
-          دفع القسط
-        </h2>
+        <h2 className="mb-7 text-2xl">دفع القسط</h2>
         {/* <div
           className={`border w-fit mx-auto border-red-600 rounded-md py-2 px-4 mb-5 ${(customerId == null && errorCode) || errors?.installmentName || errors?.itemName || errors?.itemPrice || errors?.installmentPeriod || errors?.payday ? 'block' : 'hidden'} `}
         >
@@ -161,7 +239,7 @@ function PaymentOfInstallments() {
           {customerId == null && errorCode && <h4>متنساش تختار عميل</h4>}
         </div> */}
         <form className="" onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-5 w-[60%] mx-auto text-right">
+          <div className="grid gap-5 w-[60%] ms-32 text-right">
             <div className="اختار العميل">
               <input
                 className={`py-0.5 px-3 ma-auto w-fit block mb-1 text-right focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
@@ -268,7 +346,7 @@ function PaymentOfInstallments() {
               className={`mb-20 mx-auto py-2 px-2 border ${watch('amountPerMonth') == '' && 'border-gray-600 text-gray-600'} rounded-md`}
               type="submit"
             >
-              مش عارف
+              ادفع
             </button>
           </div>
         </form>
