@@ -15,14 +15,14 @@ function PaymentOfInstallments() {
   const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
   const [randomNum, setRandomNum] = useState()
   const [currentDate, setCurrentDate] = useState('')
-
-  const now = new Date()
-  const day = String(now.getDate()).padStart(2, '0')
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const year = now.getFullYear()
-  const formattedDate = `${year}-${month}-${day}`
+  const [currentMonth, setCurrentMonth] = useState('')
 
   useEffect(() => {
+    const now = new Date()
+    const day = String(now.getDate()).padStart(2, '0')
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const year = now.getFullYear()
+    const formattedDate = `${year}-${month}-${day}`
     const storedCustomers = JSON.parse(localStorage.getItem('customers')) || []
     setCustomers(storedCustomers)
     const filteredCustomers = storedCustomers.filter(
@@ -34,10 +34,11 @@ function PaymentOfInstallments() {
       setFirstDay(day)
     }
     if (newDay == '') {
-      setNewDay(Number(day) + 1)
+      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
     }
     randomFun()
     setCurrentDate(formattedDate)
+    console.log(formattedDate)
   }, [])
 
   function randomInt(min, max) {
@@ -70,11 +71,26 @@ function PaymentOfInstallments() {
 
   const installments = customersWithInstallments[customerId]?.installments[installmentId]
 
-  let data = { mero: 'ssads' }
+  const { watch, register, handleSubmit } = useForm({
+    defaultValues: { amountPerMonth: '' }
+  })
 
-  function putDrawers() {
+  const data = {
+    customer_id: customersWithInstallments[customerId]?.customer_id,
+    name: customersWithInstallments[customerId]?.name,
+    installmentName: installments?.installmentName,
+    dateOfPurchase: installments?.dateOfPurchase,
+    payday: installments?.payday,
+    installmentPeriod: installments?.installmentPeriod,
+    remainingMonths: installments?.installmentPeriod - installments?.countMonths,
+    amountPerMonth: installments?.amountPerMonth
+  }
+  function putDrawers(currentMonth) {
     const installment = []
-    console.log('here')
+
+    data.currentMonth = currentMonth
+
+    console.log(currentMonth)
     if (currentDay == firstDay) {
       if (drawers.length == 0) {
         installment.push(data)
@@ -91,8 +107,8 @@ function PaymentOfInstallments() {
       localStorage.setItem('firstDay', JSON.stringify(currentDay))
       localStorage.setItem('drawers', JSON.stringify(drawers))
     } else if (currentDay == newDay) {
-      localStorage.setItem('newDay', JSON.stringify(newDay + 1))
-      setNewDay(newDay + 1)
+      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
+      setNewDay(Number(newDay) + 1)
       installment.push(data)
       const newData = { installment: installment }
       const newData1 = { day_id: randomNum, date: currentDate, ...newData }
@@ -100,7 +116,7 @@ function PaymentOfInstallments() {
     } else if (!drawers[drawers.length - 1]?.installment) {
       installment.push(data)
 
-      drawers[drawers.length - 1].dinstallmentrawer = installment
+      drawers[drawers.length - 1].installment = installment
     } else {
       drawers[drawers.length - 1]?.installment.push(data)
     }
@@ -126,7 +142,7 @@ function PaymentOfInstallments() {
         showConfirmButton: false,
         timer: 2000
       })
-      putDrawers()
+      putDrawers(installments?.installmentMonths[installments?.countMonths - 1]?.amountPerMonth)
     } else {
       Swal.fire({
         position: 'center',
@@ -137,10 +153,6 @@ function PaymentOfInstallments() {
       })
     }
   }
-
-  const { watch, register, handleSubmit } = useForm({
-    defaultValues: { amountPerMonth: '' }
-  })
 
   const amountPerMonth =
     customers[customerId]?.installments[installmentId]?.installmentMonths[installments.countMonths]
@@ -191,7 +203,7 @@ function PaymentOfInstallments() {
           showConfirmButton: false,
           timer: 2000
         })
-        putDrawers()
+        putDrawers(watch('amountPerMonth'))
       } else {
         if (
           parseFloat(
@@ -207,7 +219,7 @@ function PaymentOfInstallments() {
             showConfirmButton: false,
             timer: 4000
           })
-          putDrawers()
+          putDrawers(watch('amountPerMonth'))
         } else {
           customers[customerId].installments[installmentId].installmentMonths[
             installments.countMonths
@@ -318,7 +330,9 @@ function PaymentOfInstallments() {
 
                   <h4>
                     الشهر الحالي :
-                    {installments?.installmentMonths[installments.countMonths]?.amountPerMonth}
+                    {installments?.installmentMonths[installments.countMonths]?.amountPerMonth
+                      ? installments?.installmentMonths[installments.countMonths]?.amountPerMonth
+                      : ' القسط خلص'}
                   </h4>
 
                   <div className="flex items-center mt-5">

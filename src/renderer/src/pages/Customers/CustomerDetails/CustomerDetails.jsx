@@ -89,12 +89,12 @@ function CustomerDetails() {
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">اسم القسط</h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">اسم السلعة</h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">سعر السلعة</h3>
-                  <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">نسبة الربح </h3>
+                  <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">المقدم</h3>
+                  <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> المبلغ الشهري </h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> الأجمالي </h3>
-                  <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> تاريخ الشراء </h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> يوم الدفع </h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> عدد الشهور</h3>
-                  <h3 className="py-2  pe-2 me-2 basis-[10%]"> المبلغ الشهري </h3>
+                  <h3 className="py-2  pe-2 me-2 basis-[10%]">تاريخ الشراء </h3>
                 </div>
               </div>
             )}
@@ -110,16 +110,16 @@ function CustomerDetails() {
                 </h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> {installment.itemName}</h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">{installment.itemPrice} </h3>
-                <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> {installment.profitRatio} </h3>
-                <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> {installment.total}</h3>
+                <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> {installment.downPayment} </h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">
-                  {installment.dateOfPurchase}
+                  {installment.amountPerMonth}
                 </h3>
+                <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> {installment.total}</h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> {installment.payday} </h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">
                   {installment.installmentPeriod}
                 </h3>
-                <h3 className="py-2  pe-2 me-2 basis-[10%]"> {installment.amountPerMonth} </h3>
+                <h3 className="py-2  pe-2 me-2 basis-[10%]"> {installment.dateOfPurchase} </h3>
               </div>
             ))}
 

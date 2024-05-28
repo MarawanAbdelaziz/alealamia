@@ -11,19 +11,19 @@ function AddToDrawer() {
   const [randomNum, setRandomNum] = useState()
   const [currentDate, setCurrentDate] = useState('')
 
-  const now = new Date()
-  const day = String(now.getDate()).padStart(2, '0')
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const year = now.getFullYear()
-  const formattedDate = `${year}-${month}-${day}`
-
   useEffect(() => {
+    const now = new Date()
+    const day = String(now.getDate()).padStart(2, '0')
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const year = now.getFullYear()
+    const formattedDate = `${year}-${month}-${day}`
+
     setCurrentDay(day)
     if (firstDay == '') {
       setFirstDay(day)
     }
     if (newDay == '') {
-      setNewDay(Number(day) + 1)
+      localStorage.setItem('newDay', JSON.stringify(Number(day) + 1))
     }
     randomFun()
     setCurrentDate(formattedDate)
@@ -70,8 +70,8 @@ function AddToDrawer() {
       localStorage.setItem('firstDay', JSON.stringify(currentDay))
       localStorage.setItem('drawers', JSON.stringify(drawers))
     } else if (currentDay == newDay) {
-      localStorage.setItem('newDay', JSON.stringify(newDay + 1))
-      setNewDay(newDay + 1)
+      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
+      setNewDay(Number(newDay) + 1)
       drawer.push(data)
       const newData = { drawer }
       const newData1 = { day_id: randomNum, date: currentDate, ...newData }

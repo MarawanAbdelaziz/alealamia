@@ -42,3 +42,16 @@ body {
   min-height: 10px;
 
 }
+
+.border-white2 {
+  border-width: 2px;
+  border-style: solid;
+  border-color: white ;
+}
+
+
+.border-black2 {
+  border-width: 2px;
+  border-style: solid;
+  border-color:  black;
+}

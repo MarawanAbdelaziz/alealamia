@@ -15,6 +15,10 @@ function AddInstallments() {
   const [search, setSearch] = useState('')
   const [errorCode, setErrorCode] = useState(false)
   const [randomNum, setRandomNum] = useState()
+  const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
+  const [currentDay, setCurrentDay] = useState('')
+  const [firstDay, setFirstDay] = useState(JSON.parse(localStorage.getItem('firstDay')) || '')
+  const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
 
   const now = new Date()
   const year = now.getFullYear()
@@ -60,19 +64,31 @@ function AddInstallments() {
     randomFun(newId)
   }
 
-  function getInstallmentPeriods() {
-    const index = installmentPeriods.findIndex(
-      (installmentPeriod) => installmentPeriod.period == getValues('installmentPeriod')
-    )
-
-    setInstallmentPeriodId(index)
-    const totalCal = (getValues('itemPrice') * installmentPeriods[index].profitRatio).toFixed(2)
+  function calc(totalCal, index) {
     setTotal(totalCal)
     const amountPerMonth = (totalCal / installmentPeriods[index].period).toFixed(2)
     setAmountPerMonth(amountPerMonth)
     setValue('total', totalCal)
     setValue('amountPerMonth', amountPerMonth)
     setValue('profitRatio', installmentPeriods[index].profit)
+  }
+
+  function getInstallmentPeriods() {
+    const index = installmentPeriods.findIndex(
+      (installmentPeriod) => installmentPeriod.period == getValues('installmentPeriod')
+    )
+
+    setInstallmentPeriodId(index)
+    if (watch('downPayment')) {
+      const totalCal = (
+        (getValues('itemPrice') - getValues('downPayment')) *
+        installmentPeriods[index].profitRatio
+      ).toFixed(2)
+      calc(totalCal, index)
+    } else {
+      const totalCal = (getValues('itemPrice') * installmentPeriods[index].profitRatio).toFixed(2)
+      calc(totalCal, index)
+    }
   }
 
   const validationSchema = object().shape({
@@ -109,7 +125,6 @@ function AddInstallments() {
       fourthGuarantor: ''
     }
   })
-
   const onSubmit = (data) => {
     const installmentMonths = []
     for (let i = 1; i <= Number(data.installmentPeriod); i++) {
@@ -129,7 +144,6 @@ function AddInstallments() {
         customers[customerId].installments = [...customers[customerId].installments, newData]
       }
       setErrorCode(false)
-      console.log(customers)
       localStorage.setItem('customers', JSON.stringify(customers))
       Swal.fire({
         position: 'center',
@@ -137,6 +151,17 @@ function AddInstallments() {
         title: 'تم انشاء قسط جديد بنجاح',
         showConfirmButton: false,
         timer: 1500
+      })
+
+      putDrawers({
+        customer_id: customers[customerId].customer_id,
+        name: customers[customerId].name,
+        installmentName: data.installmentName,
+        downPayment: data.downPayment,
+        dateOfPurchase: data.dateOfPurchase,
+        payday: data.payday,
+        installmentPeriod: data.installmentPeriod,
+        amountPerMonth: data.amountPerMonth
       })
     } else {
       setErrorCode(true)
@@ -148,7 +173,29 @@ function AddInstallments() {
       setValue('countMonths', 0)
       getInstallmentPeriods()
     }
-  }, [watch('itemPrice'), watch('installmentPeriod')])
+    if (watch('downPayment') && watch('itemPrice')) {
+      console.log()
+      if (watch('itemPrice') - watch('downPayment') == 0) {
+        Swal.fire({
+          position: 'center',
+          icon: 'info',
+          title: 'مينفعش المقدم يبقي نفس سعر السلعة',
+          showConfirmButton: false,
+          timer: 3000
+        })
+      } else if (watch('itemPrice') - watch('downPayment') < 0) {
+        Swal.fire({
+          position: 'center',
+          icon: 'info',
+          title: 'مينفعش المقدم يبقي اكبر من سعر السلعة',
+          showConfirmButton: false,
+          timer: 3000
+        })
+      } else {
+        watch('itemPrice') - watch('downPayment')
+      }
+    }
+  }, [watch('itemPrice'), watch('installmentPeriod'), watch('downPayment')])
 
   useEffect(() => {
     if (watch('dateOfPurchase')) {
@@ -157,6 +204,42 @@ function AddInstallments() {
       setValue('dateOfPurchase', formattedDate)
     }
   }, [watch('dateOfPurchase')])
+
+  function putDrawers(data) {
+    const downPayment = []
+
+    if (currentDay == firstDay) {
+      if (drawers.length == 0) {
+        downPayment.push(data)
+        const newData = { downPayment: downPayment }
+        const newData1 = { day_id: randomNum, date: currentDate, ...newData }
+        drawers.push(newData1)
+      } else if (!drawers[drawers.length - 1]?.downPayment) {
+        downPayment.push(data)
+
+        drawers[drawers.length - 1].downPayment = downPayment
+      } else {
+        drawers[drawers.length - 1]?.downPayment.push(data)
+      }
+      localStorage.setItem('firstDay', JSON.stringify(currentDay))
+      localStorage.setItem('drawers', JSON.stringify(drawers))
+    } else if (currentDay == newDay) {
+      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
+      setNewDay(Number(newDay) + 1)
+      downPayment.push(data)
+      const newData = { downPayment: downPayment }
+      const newData1 = { day_id: randomNum, date: currentDate, ...newData }
+      drawers.push(newData1)
+    } else if (!drawers[drawers.length - 1]?.downPayment) {
+      downPayment.push(data)
+
+      drawers[drawers.length - 1].downPayment = downPayment
+    } else {
+      drawers[drawers.length - 1]?.downPayment.push(data)
+    }
+    localStorage.setItem('drawers', JSON.stringify(drawers))
+    console.log(drawers)
+  }
 
   return (
     <div className="">
