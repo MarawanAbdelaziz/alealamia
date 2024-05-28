@@ -1,59 +1,46 @@
-import { useRef } from 'react'
-import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
-const App = () => {
-  const componentRef = useRef()
+const MyDocument = () => {
+  const generatePDF = () => {
+    const doc = new jsPDF()
 
-  const applyTemporaryStyles = (element) => {
-    element.style.padding = '20px'
-    element.style.backgroundColor = '#f5f5f5'
-  }
+    const tableColumn = ['ID', 'Name', 'Country', 'Age', 'Gender']
+    const tableRows = [
+      [1, 'John Doe', 'USA', 28, 'Male'],
+      [2, 'Anna Smith', 'UK', 22, 'Female'],
+      [3, 'Peter Jones', 'Australia', 35, 'Male'],
+      [4, 'Kylie Brown', 'Canada', 25, 'Female']
+      // Add more rows here
+    ]
 
-  const revertTemporaryStyles = (element) => {
-    element.style.padding = ''
-    element.style.backgroundColor = ''
-  }
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      styles: {
+        halign: 'right' // Horizontal alignment to right for RTL
+      },
+      headStyles: {
+        halign: 'right' // Header alignment to right for RTL
+      },
+      columnStyles: {
+        // Applying RTL alignment to each column if needed
+        0: { halign: 'right' }, // ID
+        1: { halign: 'right' }, // Name
+        2: { halign: 'right' }, // Country
+        3: { halign: 'right' }, // Age
+        4: { halign: 'right' } // Gender
+      }
+    })
 
-  const handleSavePdf = async () => {
-    const element = componentRef.current
-
-    // Apply temporary styles
-    applyTemporaryStyles(element)
-
-    const canvas = await html2canvas(element, { scale: 2 })
-    const imgData = canvas.toDataURL('image/png')
-
-    // Revert styles back to original
-    revertTemporaryStyles(element)
-
-    const pdf = new jsPDF('p', 'mm', 'a4')
-    const pdfWidth = pdf.internal.pageSize.getWidth()
-    const pdfHeight = pdf.internal.pageSize.getHeight()
-
-    const imgWidth = canvas.width
-    const imgHeight = canvas.height
-
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
-
-    const imgX = 0
-    const imgY = 0
-    const imgW = imgWidth * ratio
-    const imgH = imgHeight * ratio
-
-    pdf.addImage(imgData, 'PNG', imgX, imgY, imgW, imgH)
-    pdf.save('download.pdf')
+    doc.save('table.pdf')
   }
 
   return (
-    <div>
-      <div ref={componentRef} style={{ width: '100%' }}>
-        <h1>Hello, PDF!</h1>
-        <p>This content will be saved as a PDF.</p>
-      </div>
-      <button onClick={handleSavePdf}>Save as PDF</button>
+    <div className="h-screen">
+      <button onClick={generatePDF}>Generate PDF</button>
     </div>
   )
 }
 
-export default App
+export default MyDocument
