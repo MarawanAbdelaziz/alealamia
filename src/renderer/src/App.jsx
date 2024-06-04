@@ -2,7 +2,6 @@ import { RouterProvider, createHashRouter } from 'react-router-dom'
 import Login from './pages/auth/Login'
 import Layout from './pages/Layout'
 import Installments from './pages/Installments/Installments'
-import Reports from './pages/Reports/Reports'
 import Customers from './pages/Customers/Customers'
 import Home from './pages/Home/Home'
 import ProtectedRoute from './pages/ProtectedRoute/ProtectedRoute'
@@ -10,9 +9,7 @@ import ChangePassword from './pages/ChangePassword/ChangePassword'
 import LoginAdmin from './pages/auth/LoginAdmin'
 import CustomerDetails from './pages/Customers/CustomerDetails/CustomerDetails'
 import DrawerDetails from './pages/Installments/DrawerDetails/DrawerDetails'
-import MyDocument from './pages/MyDocument/MyDocument'
-
-// import ProtectedRoute from './pages/ProtectedRoute/ProtectedRoute'
+import WasalAmanahh from './pages/WasalAmanahh/WasalAmanahh'
 
 function App() {
   const routers = createHashRouter([
@@ -33,20 +30,16 @@ function App() {
           element: <Installments />
         },
         {
-          path: '/mydocument',
-          element: <MyDocument />
-        },
-        {
           path: '/drawerdetails',
           element: <DrawerDetails />
         },
         {
-          path: '/reports',
-          element: <Reports />
-        },
-        {
           path: '/customers',
           element: <Customers />
+        },
+        {
+          path: '/wasalamanahh',
+          element: <WasalAmanahh />
         },
         {
           path: '/customerdetails',

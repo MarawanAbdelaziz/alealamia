@@ -14,12 +14,16 @@ function DrawerDetails() {
   const revertTemporaryStyles = (element) => {
     element.style.padding = ''
   }
+
   const handleSavePdf = async () => {
     const element = componentRef.current
 
     applyTemporaryStyles(element)
 
-    const canvas = await html2canvas(element, { scale: 2 })
+    const width = element.offsetWidth
+    const height = element.offsetHeight
+
+    const canvas = await html2canvas(element, { width, height, scale: 2 })
     const imgData = canvas.toDataURL('image/png')
 
     revertTemporaryStyles(element)
@@ -31,14 +35,19 @@ function DrawerDetails() {
     const imgWidth = canvas.width
     const imgHeight = canvas.height
 
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
+    const widthRatio = pdfWidth / imgWidth
+    const heightRatio = pdfHeight / imgHeight
 
+    const ratio = Math.min(widthRatio, heightRatio)
+
+    const newWidth = imgWidth * ratio
+    const newHeight = imgHeight * ratio
+    console.log(newWidth)
+    console.log(newHeight)
     const imgX = 0
     const imgY = 0
-    const imgW = imgWidth * ratio
-    const imgH = imgHeight * ratio
 
-    pdf.addImage(imgData, 'PNG', imgX, imgY, imgW, imgH)
+    pdf.addImage(imgData, 'PNG', imgX, imgY, newWidth, newHeight)
     pdf.save(`درج بتاريخ ${drawers[drawerId]?.date}.pdf`)
   }
 
@@ -59,8 +68,8 @@ function DrawerDetails() {
   return (
     <div className="bg-white text-black">
       <BackButtoon data={'/installments'} />
-      <div className="pt-28 py-10">
-        <div ref={componentRef} className="">
+      <div className="pt-28 py-10 ">
+        <div ref={componentRef} className="h-fit">
           <h2 className="text-2xl mb-10 text-center">تاريخ اليوم : {drawers[drawerId]?.date} </h2>
           <div className="mb-5">
             {drawers[drawerId]?.installment && (
@@ -81,7 +90,7 @@ function DrawerDetails() {
                   </h3>
                   <h3 className="py-2 ps-2 basis-[10%]"> المدفوغ </h3>
                 </div>
-                {drawers[drawerId]?.installment.map((installment) => (
+                {drawers[drawerId]?.installment?.map((installment) => (
                   <div
                     key={installment.customer_id}
                     className="mx-6 border border-black px-2 flex font-semibold "
@@ -116,7 +125,7 @@ function DrawerDetails() {
               </div>
             )}
 
-            {drawers[drawerId]?.installment && (
+            {drawers[drawerId]?.downPayment && (
               <div className="المقدم mt-20">
                 <h3 className="mb-3 ms-6 text-lg font-medium"> المقدم : </h3>
                 <div className="mx-6 border border-black px-2 flex font-semibold ">
@@ -133,32 +142,32 @@ function DrawerDetails() {
                 </div>
                 {drawers[drawerId]?.downPayment.map((downPayment) => (
                   <div
-                    key={downPayment.customer_id}
+                    key={downPayment?.customer_id}
                     className="mx-6 border border-black px-2 flex font-semibold "
                   >
                     <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                      {downPayment.customer_id}
+                      {downPayment?.customer_id}
                     </h3>
                     <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                      {downPayment.name}
+                      {downPayment?.name}
                     </h3>
                     <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                      {downPayment.installmentName}
+                      {downPayment?.installmentName}
                     </h3>
                     <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                      {downPayment.downPayment}
+                      {downPayment?.downPayment}
                     </h3>
                     <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                      {downPayment.amountPerMonth}
+                      {downPayment?.amountPerMonth}
                     </h3>
                     <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                      {downPayment.installmentPeriod}
+                      {downPayment?.installmentPeriod}
                     </h3>
                     <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                      {downPayment.payday}
+                      {downPayment?.payday}
                     </h3>
 
-                    <h3 className="py-2 ps-2 basis-[10%]">{downPayment.dateOfPurchase}</h3>
+                    <h3 className="py-2 ps-2 basis-[10%]">{downPayment?.dateOfPurchase}</h3>
                   </div>
                 ))}
               </div>

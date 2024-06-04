@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 
 function AddInstallments() {
   const [customers, setCustomers] = useState(JSON.parse(localStorage.getItem('customers')) || [])
+  const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
   const [customerId, setCustomerId] = useState()
   const [installmentPeriodId, setInstallmentPeriodId] = useState()
   const [total, setTotal] = useState()
@@ -15,16 +16,22 @@ function AddInstallments() {
   const [search, setSearch] = useState('')
   const [errorCode, setErrorCode] = useState(false)
   const [randomNum, setRandomNum] = useState()
-  const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
+  const [randomNumDrawer, setRandomNumDrawer] = useState()
   const [currentDay, setCurrentDay] = useState('')
   const [firstDay, setFirstDay] = useState(JSON.parse(localStorage.getItem('firstDay')) || '')
   const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
 
   const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  const formattedDate = `${year}-${month}-${day}`
+  function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${year}-${month}-${day}`
+  }
+  const formattedDate = formatDate(now)
+  const nextDay = new Date(now)
+  nextDay.setDate(now.getDate() + 1)
+  const formattedNewDate = formatDate(nextDay)
 
   const Paydays = [1, 5, 10, 15, 20, 25]
   const installmentPeriods = [
@@ -55,7 +62,15 @@ function AddInstallments() {
   }
 
   useEffect(() => {
-    setCurrentDate(formattedDate)
+    randomFun()
+    randomFunDrawer()
+    setCurrentDay(formattedDate)
+    if (firstDay == '') {
+      setFirstDay(formattedDate)
+    }
+    if (newDay == '') {
+      localStorage.setItem('newDay', JSON.stringify(formattedNewDate))
+    }
   }, [])
 
   function getCustomer(id) {
@@ -125,6 +140,7 @@ function AddInstallments() {
       fourthGuarantor: ''
     }
   })
+
   const onSubmit = (data) => {
     const installmentMonths = []
     for (let i = 1; i <= Number(data.installmentPeriod); i++) {
@@ -153,16 +169,18 @@ function AddInstallments() {
         timer: 1500
       })
 
-      putDrawers({
-        customer_id: customers[customerId].customer_id,
-        name: customers[customerId].name,
-        installmentName: data.installmentName,
-        downPayment: data.downPayment,
-        dateOfPurchase: data.dateOfPurchase,
-        payday: data.payday,
-        installmentPeriod: data.installmentPeriod,
-        amountPerMonth: data.amountPerMonth
-      })
+      if (data.downPayment) {
+        putDrawers({
+          customer_id: customers[customerId].customer_id,
+          name: customers[customerId].name,
+          installmentName: data.installmentName,
+          downPayment: data.downPayment,
+          dateOfPurchase: data.dateOfPurchase,
+          payday: data.payday,
+          installmentPeriod: data.installmentPeriod,
+          amountPerMonth: data.amountPerMonth
+        })
+      }
     } else {
       setErrorCode(true)
     }
@@ -205,30 +223,44 @@ function AddInstallments() {
     }
   }, [watch('dateOfPurchase')])
 
+  function randomIntDrawer(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min
+  }
+
+  function randomFunDrawer() {
+    let uniqueRandomNum
+    do {
+      uniqueRandomNum = randomIntDrawer(1, drawers.length + 2)
+    } while (drawers.some((drawer) => drawer.day_id === uniqueRandomNum))
+    setRandomNumDrawer(uniqueRandomNum)
+  }
+
+  useEffect(() => {
+    randomFunDrawer()
+  }, [drawers])
+
   function putDrawers(data) {
     const downPayment = []
-
     if (currentDay == firstDay) {
       if (drawers.length == 0) {
         downPayment.push(data)
         const newData = { downPayment: downPayment }
-        const newData1 = { day_id: randomNum, date: currentDate, ...newData }
+        const newData1 = { day_id: randomNumDrawer, date: currentDate, ...newData }
         drawers.push(newData1)
       } else if (!drawers[drawers.length - 1]?.downPayment) {
         downPayment.push(data)
-
         drawers[drawers.length - 1].downPayment = downPayment
       } else {
         drawers[drawers.length - 1]?.downPayment.push(data)
       }
       localStorage.setItem('firstDay', JSON.stringify(currentDay))
       localStorage.setItem('drawers', JSON.stringify(drawers))
-    } else if (currentDay == newDay) {
-      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
-      setNewDay(Number(newDay) + 1)
+    } else if (currentDay == newDay || currentDay > newDay) {
+      localStorage.setItem('newDay', JSON.stringify(formattedNewDate))
+      setNewDay(formattedNewDate)
       downPayment.push(data)
       const newData = { downPayment: downPayment }
-      const newData1 = { day_id: randomNum, date: currentDate, ...newData }
+      const newData1 = { day_id: randomNumDrawer, date: currentDate, ...newData }
       drawers.push(newData1)
     } else if (!drawers[drawers.length - 1]?.downPayment) {
       downPayment.push(data)

@@ -17,28 +17,36 @@ function PaymentOfInstallments() {
   const [currentDate, setCurrentDate] = useState('')
   const [currentMonth, setCurrentMonth] = useState('')
 
+  const now = new Date()
+  function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${year}-${month}-${day}`
+  }
+  const formattedDate = formatDate(now)
+  const nextDay = new Date(now)
+  nextDay.setDate(now.getDate() + 1)
+  const formattedNewDate = formatDate(nextDay)
+
   useEffect(() => {
-    const now = new Date()
-    const day = String(now.getDate()).padStart(2, '0')
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const year = now.getFullYear()
-    const formattedDate = `${year}-${month}-${day}`
     const storedCustomers = JSON.parse(localStorage.getItem('customers')) || []
     setCustomers(storedCustomers)
     const filteredCustomers = storedCustomers.filter(
       (customer) => customer.installments && customer.installments.length > 0
     )
     setCustomersWithInstallments(filteredCustomers)
-    setCurrentDay(day)
+
+    setCurrentDay(formattedDate)
     if (firstDay == '') {
-      setFirstDay(day)
+      setFirstDay(formattedDate)
     }
     if (newDay == '') {
-      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
+      localStorage.setItem('newDay', JSON.stringify(formattedNewDate))
     }
+
     randomFun()
     setCurrentDate(formattedDate)
-    console.log(formattedDate)
   }, [])
 
   function randomInt(min, max) {
@@ -49,7 +57,7 @@ function PaymentOfInstallments() {
     let uniqueRandomNum
     do {
       uniqueRandomNum = randomInt(1, drawers.length + 2)
-    } while (drawers.some((drawer) => drawer.drawer_id === uniqueRandomNum))
+    } while (drawers.some((drawer) => drawer.day_id === uniqueRandomNum))
     setRandomNum(uniqueRandomNum)
   }
 
@@ -106,9 +114,9 @@ function PaymentOfInstallments() {
       }
       localStorage.setItem('firstDay', JSON.stringify(currentDay))
       localStorage.setItem('drawers', JSON.stringify(drawers))
-    } else if (currentDay == newDay) {
-      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
-      setNewDay(Number(newDay) + 1)
+    } else if (currentDay == newDay || currentDay > newDay) {
+      localStorage.setItem('newDay', JSON.stringify(formattedNewDate))
+      setNewDay(formattedNewDate)
       installment.push(data)
       const newData = { installment: installment }
       const newData1 = { day_id: randomNum, date: currentDate, ...newData }
@@ -171,7 +179,7 @@ function PaymentOfInstallments() {
       ) {
         customers[customerId].installments[installmentId].installmentMonths[
           installments.countMonths + 1
-        ].amountPerMonth =
+        ].amountPerMonth = (
           parseFloat(
             customers[customerId]?.installments[installmentId]?.installmentMonths[
               installments.countMonths + 1
@@ -183,6 +191,7 @@ function PaymentOfInstallments() {
             ]?.amountPerMonth
           ) -
           parseFloat(data.amountPerMonth)
+        ).toFixed(2)
 
         customers[customerId].installments[installmentId].installmentMonths[
           installments.countMonths

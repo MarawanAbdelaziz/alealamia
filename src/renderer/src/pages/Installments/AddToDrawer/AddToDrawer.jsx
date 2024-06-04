@@ -11,19 +11,26 @@ function AddToDrawer() {
   const [randomNum, setRandomNum] = useState()
   const [currentDate, setCurrentDate] = useState('')
 
-  useEffect(() => {
-    const now = new Date()
-    const day = String(now.getDate()).padStart(2, '0')
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const year = now.getFullYear()
-    const formattedDate = `${year}-${month}-${day}`
+  const now = new Date()
+  function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${year}-${month}-${day}`
+  }
+  const formattedDate = formatDate(now)
 
-    setCurrentDay(day)
+  const nextDay = new Date(now)
+  nextDay.setDate(now.getDate() + 1)
+  const formattedNewDate = formatDate(nextDay)
+
+  useEffect(() => {
+    setCurrentDay(formattedDate)
     if (firstDay == '') {
-      setFirstDay(day)
+      setFirstDay(formattedDate)
     }
     if (newDay == '') {
-      localStorage.setItem('newDay', JSON.stringify(Number(day) + 1))
+      localStorage.setItem('newDay', JSON.stringify(formattedNewDate))
     }
     randomFun()
     setCurrentDate(formattedDate)
@@ -44,7 +51,7 @@ function AddToDrawer() {
     let uniqueRandomNum
     do {
       uniqueRandomNum = randomInt(1, drawers.length + 2)
-    } while (drawers.some((drawer) => drawer.drawer_id === uniqueRandomNum))
+    } while (drawers.some((drawer) => drawer.day_id === uniqueRandomNum))
     setRandomNum(uniqueRandomNum)
   }
 
@@ -69,9 +76,9 @@ function AddToDrawer() {
       }
       localStorage.setItem('firstDay', JSON.stringify(currentDay))
       localStorage.setItem('drawers', JSON.stringify(drawers))
-    } else if (currentDay == newDay) {
-      localStorage.setItem('newDay', JSON.stringify(Number(newDay) + 1))
-      setNewDay(Number(newDay) + 1)
+    } else if (currentDay == newDay || currentDay > newDay) {
+      localStorage.setItem('newDay', JSON.stringify(formattedNewDate))
+      setNewDay(formattedNewDate)
       drawer.push(data)
       const newData = { drawer }
       const newData1 = { day_id: randomNum, date: currentDate, ...newData }
@@ -84,7 +91,6 @@ function AddToDrawer() {
     }
     localStorage.setItem('drawers', JSON.stringify(drawers))
     console.log(drawers)
-
     Swal.fire({
       position: 'center',
       icon: 'success',
