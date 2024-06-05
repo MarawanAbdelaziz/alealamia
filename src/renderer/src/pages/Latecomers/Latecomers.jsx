@@ -13,8 +13,9 @@ function Latecomers() {
         customer_id: customer.customer_id,
         name: customer.name,
         installments: customer.installments.map((installment) => {
-          installment.payday
+          console.log(installment)
           return {
+            installment_id: installment.installment_id,
             installmentName: installment.installmentName,
             itemName: installment.itemName,
             payday: installment.payday
@@ -23,7 +24,6 @@ function Latecomers() {
       })
     })
     setNewCustomers(cust)
-    console.log(newCustomers)
   }, [])
 
   const now = new Date()
@@ -46,14 +46,15 @@ function Latecomers() {
         {newCustomers?.map((customer) => (
           <div dir="rtl" key={customer.customer_id} className="border my-5 mx-3 py-4 px-4">
             <div className="w-full flex mb-3">
-              <h3 className=" me-11">كود : {customer.customer_id}</h3>
-              <h3 className=" me-auto">اسم : {customer.name}</h3>
+              <h3 className=" me-11">كود العميل : {customer.customer_id}</h3>
+              <h3 className=" me-auto">الاسم : {customer.name}</h3>
             </div>
             {customer.installments.map((installment) => (
-              <div className="flex  w-full" key={customer.customer_id}>
-                <h3 className=" me-11">اسم القسط:{installment.installmentName}</h3>
-                <h3 className=" me-11">اسم السلعه :{installment.itemName}</h3>
-                <h3 className=" me-auto">يوم الدفع : {installment.payday}</h3>
+              <div className="flex  w-full" key={installment.installment_id}>
+                <h3 className="mb-1 basis-[12%]">كود القسط: {installment.installment_id}</h3>
+                <h3 className="mb-1 basis-[25%]">اسم القسط: {installment.installmentName}</h3>
+                <h3 className="mb-1 basis-[25%]">اسم السلعه : {installment.itemName}</h3>
+                <h3 className="basis-[12%]">يوم الدفع : {installment.payday}</h3>
               </div>
             ))}
           </div>
