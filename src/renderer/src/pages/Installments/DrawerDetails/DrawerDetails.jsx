@@ -65,6 +65,16 @@ function DrawerDetails() {
     getDrawer(state.day_id)
   }, [])
 
+  let sum = 0
+  let other = 0
+  let total = 0
+
+  drawers[drawerId]?.installment?.map((installment) => (sum += Number(installment.currentMonth)))
+  drawers[drawerId]?.downPayment.map((downPayment) => (sum += Number(downPayment.downPayment)))
+  drawers[drawerId]?.drawer?.map((dr) => (other += Number(dr.price)))
+
+  total = sum - other
+
   return (
     <div className="bg-white text-black">
       <BackButtoon data={'/installments'} />
@@ -178,7 +188,7 @@ function DrawerDetails() {
                 <h3 className="mb-3 ms-6 text-lg font-medium mt-20 "> مصادر اخري : </h3>
                 <div className="mx-6 border border-black px-2 flex font-semibold w-fit ">
                   <h3 className="py-2 border-l border-black pe-2 me-2 w-36 ">الاسم</h3>
-                  <h3 className="py-2 ps-2 w-96"> الوصف </h3>
+                  <h3 className="py-2 ps-2 w-96"> السعر </h3>
                 </div>
                 {drawers[drawerId]?.drawer?.map((dr) => (
                   <div
@@ -186,11 +196,15 @@ function DrawerDetails() {
                     className="mx-6 border border-black px-2 flex font-semibold w-fit "
                   >
                     <h3 className="py-2 border-l border-black pe-2 me-2 w-36 ">{dr.name}</h3>
-                    <h3 className="py-2 ps-2 w-96"> {dr.description} </h3>
+                    <h3 className="py-2 ps-2 w-96"> {dr.price} </h3>
                   </div>
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="mb-3 mt-10 ms-6 text-xl font-semibold">
+            <h4>اجمالي الدرج : {total}</h4>
           </div>
         </div>
         <button

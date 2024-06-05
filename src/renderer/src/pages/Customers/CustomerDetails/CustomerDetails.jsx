@@ -226,6 +226,38 @@ function CustomerDetails() {
                 ))}
               </div>
             ))}
+
+            {months != 0 && (
+              <div>
+                <h3 className="mb-3 ms-6 text-lg font-medium mt-10"> ايام الدفع : </h3>
+                <div className="mx-6 border ps-2 flex font-semibold  w-fit">
+                  <h3 className="py-2 pe-2.5 w-10 ">كود</h3>
+                  {months?.map((months) => (
+                    <h3 key={months.month} className="py-2 border-r px-2  w-20">
+                      {months.month}
+                    </h3>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {customers[customerId]?.installments?.map((installment) => (
+              <div
+                key={installment.installment_id}
+                className="mx-6 border ps-2 flex font-semibold w-fit"
+              >
+                <h3 className="py-2 pe-2 w-10">{installment.installment_id}</h3>
+
+                {installment?.installmentMonths?.map((installmentMonths) => (
+                  <h3
+                    key={installmentMonths.id}
+                    className={`py-3 border-r px-0.5 ${!installmentMonths.paydayDate && 'hidden'}  w-20 text-center text-[0.8rem]`}
+                  >
+                    {installmentMonths.paydayDate}
+                  </h3>
+                ))}
+              </div>
+            ))}
           </div>
         )}
 

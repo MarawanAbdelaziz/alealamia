@@ -19,6 +19,7 @@ function Installments() {
             onClick={() => setToggle('AddInstallments')}
             className="block ms-28 me-5 text-xl border py-1 px-4 xl:py-1 xl:px-8 rounded-lg"
           >
+            
             اضافه قسط
           </button>
           <button

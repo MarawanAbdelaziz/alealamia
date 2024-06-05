@@ -139,6 +139,11 @@ function PaymentOfInstallments() {
       customers[customerId].installments[installmentId].installmentMonths[
         installments.countMonths
       ].payed = true
+
+      customers[customerId].installments[installmentId].installmentMonths[
+        installments.countMonths
+      ].paydayDate = formattedDate
+
       if (installments.installmentMonths[installments.countMonths].payed) {
         customers[customerId].installments[installmentId].countMonths += 1
       }
@@ -201,6 +206,10 @@ function PaymentOfInstallments() {
           installments.countMonths
         ].payed = true
 
+        customers[customerId].installments[installmentId].installmentMonths[
+          installments.countMonths
+        ].paydayDate = formattedDate
+
         if (installments.installmentMonths[installments.countMonths].payed) {
           customers[customerId].installments[installmentId].countMonths += 1
         }
@@ -233,6 +242,11 @@ function PaymentOfInstallments() {
           customers[customerId].installments[installmentId].installmentMonths[
             installments.countMonths
           ].payed = true
+
+          customers[customerId].installments[installmentId].installmentMonths[
+            installments.countMonths
+          ].paydayDate = formattedDate
+
           if (installments.installmentMonths[installments.countMonths].payed) {
             customers[customerId].installments[installmentId].countMonths += 1
           }
@@ -252,13 +266,6 @@ function PaymentOfInstallments() {
   return (
     <div>
       <div className="mt-10  mx-5 text-center">
-        <h2 className="mb-7 text-2xl">دفع القسط</h2>
-        {/* <div
-          className={`border w-fit mx-auto border-red-600 rounded-md py-2 px-4 mb-5 ${(customerId == null && errorCode) || errors?.installmentName || errors?.itemName || errors?.itemPrice || errors?.installmentPeriod || errors?.payday ? 'block' : 'hidden'} `}
-        >
-          <h4>{errors?.installmentName?.message}</h4>
-          {customerId == null && errorCode && <h4>متنساش تختار عميل</h4>}
-        </div> */}
         <form className="" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-5 w-[60%] ms-32 text-right">
             <div className="اختار العميل">

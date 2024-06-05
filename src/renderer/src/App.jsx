@@ -10,6 +10,7 @@ import LoginAdmin from './pages/auth/LoginAdmin'
 import CustomerDetails from './pages/Customers/CustomerDetails/CustomerDetails'
 import DrawerDetails from './pages/Installments/DrawerDetails/DrawerDetails'
 import WasalAmanahh from './pages/WasalAmanahh/WasalAmanahh'
+import Latecomers from './pages/Latecomers/Latecomers'
 
 function App() {
   const routers = createHashRouter([
@@ -40,6 +41,10 @@ function App() {
         {
           path: '/wasalamanahh',
           element: <WasalAmanahh />
+        },
+        {
+          path: '/latecomers',
+          element: <Latecomers />
         },
         {
           path: '/customerdetails',

@@ -39,7 +39,7 @@ function AddToDrawer() {
   const { register, handleSubmit } = useForm({
     defaultValues: {
       name: '',
-      description: ''
+      price: ''
     }
   })
 
@@ -113,12 +113,13 @@ function AddToDrawer() {
             {...register('name')}
           />
 
-          <textarea
-            className={`block w-[50%] mt-10 me-auto py-2 px-3  focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
+          <input
+            className={`block mt-10 me-auto py-2 px-3  focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
             required
-            placeholder="الوصف"
-            {...register('description')}
-          ></textarea>
+            type="number"
+            placeholder="السعر"
+            {...register('price')}
+          />
 
           <button
             className={`block mt-16 text-lg me-auto py-2 px-10 border rounded-md`}
