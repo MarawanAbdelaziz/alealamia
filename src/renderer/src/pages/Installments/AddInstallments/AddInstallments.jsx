@@ -143,16 +143,22 @@ function AddInstallments() {
 
   const onSubmit = (data) => {
     const installmentMonths = []
+    const initialDate = new Date(data.dateOfPurchase)
+
     for (let i = 1; i <= Number(data.installmentPeriod); i++) {
+      const newDate = new Date(initialDate)
+      newDate.setMonth(initialDate.getMonth() + i)
+      const formattedDate = newDate.toISOString().split('T')[0]
       installmentMonths.push({
         id: i,
         amountPerMonth: data.amountPerMonth,
+        month: formattedDate,
         payed: false
       })
     }
 
     const newData = { installment_id: randomNum, installmentMonths: installmentMonths, ...data }
-
+    console.log(newData)
     if (customerId != null) {
       if (customers[customerId].installments == null) {
         customers[customerId].installments = [newData]
@@ -192,7 +198,6 @@ function AddInstallments() {
       getInstallmentPeriods()
     }
     if (watch('downPayment') && watch('itemPrice')) {
-      console.log()
       if (watch('itemPrice') - watch('downPayment') == 0) {
         Swal.fire({
           position: 'center',
@@ -270,7 +275,6 @@ function AddInstallments() {
       drawers[drawers.length - 1]?.downPayment.push(data)
     }
     localStorage.setItem('drawers', JSON.stringify(drawers))
-    console.log(drawers)
   }
 
   return (

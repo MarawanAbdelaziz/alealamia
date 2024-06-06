@@ -19,17 +19,6 @@ function CustomerDetails() {
 
     localStorage.setItem('customers', JSON.stringify(customers))
   }
-  const [months, setMonths] = useState([])
-
-  function Months(number) {
-    const months = []
-    for (let i = 1; i <= number; i++) {
-      months.push({
-        month: `شهر ${i}`
-      })
-    }
-    setMonths(months)
-  }
 
   useEffect(() => {
     if (customers[customerId].installments) {
@@ -39,16 +28,6 @@ function CustomerDetails() {
           (installment) => installment?.installmentMonths?.length
         )
       )
-
-      maxNum == 20
-        ? Months(20)
-        : maxNum == 15
-          ? Months(15)
-          : maxNum == 10
-            ? Months(10)
-            : maxNum == 5
-              ? Months(5)
-              : Months(0)
     }
   }, [customers])
 
@@ -194,68 +173,47 @@ function CustomerDetails() {
                 </div>
               ))}
 
-            {months != 0 && (
-              <div>
-                <h3 className="mb-3 ms-6 text-lg font-medium mt-10"> شهور القسط : </h3>
-                <div className="mx-6 border ps-2 flex font-semibold  w-fit">
-                  <h3 className="py-2 pe-2 border-l me-2 w-10 ">كود</h3>
-                  {months?.map((months) => (
-                    <h3 key={months.month} className="py-2 border-l px-2  w-20">
-                      {months.month}
+            <h3 className="mb-3 ms-6 text-lg font-medium mt-10"> شهور القسط : </h3>
+            {customers[customerId]?.installments?.map((installment) => (
+              <div className="mb-5" key={installment.installment_id}>
+                <div className="mx-6 border ps-2 flex font-semibold w-fit">
+                  <h3 className="py-2 pe-2 w-20">كود ⬇️</h3>
+                  {installment?.installmentMonths?.map((installmentMonths) => {
+                    const [year, months, day] = installmentMonths.month.split('-')
+                    return (
+                      <h3
+                        key={installmentMonths.installment_id}
+                        className="py-2 border-r px-2  w-20"
+                      >
+                        {`${months}-${day}`}
+                      </h3>
+                    )
+                  })}
+                </div>
+
+                <div className="mx-6 border ps-2 flex font-semibold w-fit">
+                  <h3 className="py-2 pe-2 w-20">{installment.installment_id}</h3>
+                  {installment?.installmentMonths?.map((installmentMonths) => (
+                    <h3 key={installmentMonths.id} className="py-2 border-r px-2 w-20">
+                      {installmentMonths.payed ? (
+                        <del>{installmentMonths.amountPerMonth}</del>
+                      ) : (
+                        installmentMonths.amountPerMonth
+                      )}
                     </h3>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {customers[customerId]?.installments?.map((installment) => (
-              <div
-                key={installment.installment_id}
-                className="mx-6 border ps-2 flex font-semibold w-fit"
-              >
-                <h3 className="py-2 pe-2 border-l  me-2 w-10">{installment.installment_id}</h3>
-
-                {installment?.installmentMonths?.map((installmentMonths) => (
-                  <h3 key={installmentMonths.id} className="py-2 border-l px-2 w-20">
-                    {installmentMonths.payed ? (
-                      <del>{installmentMonths.amountPerMonth}</del>
-                    ) : (
-                      installmentMonths.amountPerMonth
-                    )}
-                  </h3>
-                ))}
-              </div>
-            ))}
-
-            {months != 0 && (
-              <div>
-                <h3 className="mb-3 ms-6 text-lg font-medium mt-10"> ايام الدفع : </h3>
-                <div className="mx-6 border ps-2 flex font-semibold  w-fit">
-                  <h3 className="py-2 pe-2.5 w-10 ">كود</h3>
-                  {months?.map((months) => (
-                    <h3 key={months.month} className="py-2 border-r px-2  w-20">
-                      {months.month}
+                <div className="mx-6 border ps-2 flex font-semibold w-fit">
+                  <h3 className="py-2 pe-2 w-20">تاريخ الدفع</h3>
+                  {installment?.installmentMonths?.map((installmentMonths) => (
+                    <h3
+                      key={installmentMonths.id}
+                      className={`py-3 border-r px-0.5 ${!installmentMonths.paydayDate && 'hidden'}  w-20 text-center text-[0.8rem]`}
+                    >
+                      {installmentMonths.paydayDate}
                     </h3>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {customers[customerId]?.installments?.map((installment) => (
-              <div
-                key={installment.installment_id}
-                className="mx-6 border ps-2 flex font-semibold w-fit"
-              >
-                <h3 className="py-2 pe-2 w-10">{installment.installment_id}</h3>
-
-                {installment?.installmentMonths?.map((installmentMonths) => (
-                  <h3
-                    key={installmentMonths.id}
-                    className={`py-3 border-r px-0.5 ${!installmentMonths.paydayDate && 'hidden'}  w-20 text-center text-[0.8rem]`}
-                  >
-                    {installmentMonths.paydayDate}
-                  </h3>
-                ))}
               </div>
             ))}
           </div>
