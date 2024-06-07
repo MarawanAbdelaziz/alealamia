@@ -9,12 +9,23 @@ function CustomerDetails() {
   const customerId = customers.findIndex((customer) => customer.customer_id == state.customer_id)
   console.log(customers[customerId])
 
-  function deleteCustomer(id) {
+  function deleteInstallment(id) {
     const newCustomers = [...customers]
     const newData = newCustomers[customerId]?.installments?.filter(
       (installment) => installment.installment_id != id
     )
     newCustomers[customerId].installments = newData
+    setCustomers(newCustomers)
+
+    localStorage.setItem('customers', JSON.stringify(customers))
+  }
+
+  function deleteWasalAmanah(id) {
+    const newCustomers = [...customers]
+    const newData = newCustomers[customerId]?.wasalAmanah?.filter(
+      (wasalAmanah) => wasalAmanah.wasalAmanah_id != id
+    )
+    newCustomers[customerId].wasalAmanah = newData
     setCustomers(newCustomers)
 
     localStorage.setItem('customers', JSON.stringify(customers))
@@ -164,7 +175,7 @@ function CustomerDetails() {
                   </h3>
                   <button
                     onClick={() => {
-                      deleteCustomer(installment.installment_id)
+                      deleteInstallment(installment.installment_id)
                     }}
                     className="border border-red-600 rounded-md my-2 ms-auto py-1 px-2"
                   >
@@ -229,7 +240,7 @@ function CustomerDetails() {
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">اسم البلد</h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">رقم الدفتر</h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">تاريخ الشراء </h3>
-                  <h3 className="py-2  pe-2 me-2 basis-[10%]">تفاصيل</h3>
+                  <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">تفاصيل</h3>
                 </div>
               </div>
             )}
@@ -247,9 +258,17 @@ function CustomerDetails() {
                 <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">
                   {wasalAmanah.dateOfPurchase}
                 </h3>
-                <h3 className="py-2  pe-2 me-2 basis-[10%]">
+                <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">
                   {wasalAmanah.details ? wasalAmanah.details : 'لا يوجد'}
                 </h3>
+                <button
+                  onClick={() => {
+                    deleteWasalAmanah(wasalAmanah.wasalAmanah_id)
+                  }}
+                  className="border border-red-600 rounded-md my-2 ms-auto py-1 px-2"
+                >
+                  امسح القسط
+                </button>
               </div>
             ))}
         </div>

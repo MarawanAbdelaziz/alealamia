@@ -147,7 +147,8 @@ function AddInstallments() {
 
     for (let i = 1; i <= Number(data.installmentPeriod); i++) {
       const newDate = new Date(initialDate)
-      newDate.setMonth(initialDate.getMonth() + i)
+      newDate.setMonth(initialDate.getMonth() + i - 1)
+      newDate.setDate(data.payday)
       const formattedDate = newDate.toISOString().split('T')[0]
       installmentMonths.push({
         id: i,

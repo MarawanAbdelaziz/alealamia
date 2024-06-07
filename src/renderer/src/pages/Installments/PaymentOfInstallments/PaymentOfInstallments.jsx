@@ -9,7 +9,9 @@ function PaymentOfInstallments() {
   const [customerId, setCustomerId] = useState()
   const [installmentId, setInstallmentId] = useState()
   const [search, setSearch] = useState('')
+  const [btn, setBtn] = useState('')
   const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
+
   const [currentDay, setCurrentDay] = useState('')
   const [firstDay, setFirstDay] = useState(JSON.parse(localStorage.getItem('firstDay')) || '')
   const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
@@ -30,7 +32,7 @@ function PaymentOfInstallments() {
   const formattedNewDate = formatDate(nextDay)
 
   useEffect(() => {
-    const storedCustomers = JSON.parse(localStorage.getItem('customers')) || []
+    const storedCustomers = JSON.parse(localStorage.getItem('customers') || [])
     setCustomers(storedCustomers)
     const filteredCustomers = storedCustomers.filter(
       (customer) => customer.installments && customer.installments.length > 0
@@ -62,8 +64,13 @@ function PaymentOfInstallments() {
   }
 
   useEffect(() => {
+    const storedCustomers = JSON.parse(localStorage.getItem('customers') || [])
+    const filteredCustomers = storedCustomers.filter(
+      (customer) => customer.installments && customer.installments.length > 0
+    )
+    setCustomersWithInstallments(filteredCustomers)
     randomFun()
-  }, [drawers])
+  }, [btn])
 
   function getCustomer(id) {
     const newId = customersWithInstallments.findIndex((customer) => customer.customer_id == id)
@@ -97,8 +104,6 @@ function PaymentOfInstallments() {
     const installment = []
 
     data.currentMonth = currentMonth
-
-    console.log(currentMonth)
     if (currentDay == firstDay) {
       if (drawers.length == 0) {
         installment.push(data)
@@ -129,24 +134,20 @@ function PaymentOfInstallments() {
       drawers[drawers.length - 1]?.installment.push(data)
     }
     localStorage.setItem('drawers', JSON.stringify(drawers))
-    console.log(drawers)
+    console.log('drawers', drawers)
   }
 
   function payNowBtn() {
     const customer = customers[customerId]
     const installment = customer.installments[installmentId]
-    if (installment.countMonths < installment.installmentPeriod) {
-      customers[customerId].installments[installmentId].installmentMonths[
-        installments.countMonths
-      ].payed = true
+    const countMonths = customers[customerId].installments[installmentId].countMonths
+    if (countMonths < installment.installmentPeriod) {
+      customers[customerId].installments[installmentId].installmentMonths[countMonths].paydayDate =
+        formattedDate
 
-      customers[customerId].installments[installmentId].installmentMonths[
-        installments.countMonths
-      ].paydayDate = formattedDate
+      customers[customerId].installments[installmentId].installmentMonths[countMonths].payed = true
+      customers[customerId].installments[installmentId].countMonths += 1
 
-      if (installments.installmentMonths[installments.countMonths].payed) {
-        customers[customerId].installments[installmentId].countMonths += 1
-      }
       localStorage.setItem('customers', JSON.stringify(customers))
       Swal.fire({
         position: 'center',
@@ -155,7 +156,7 @@ function PaymentOfInstallments() {
         showConfirmButton: false,
         timer: 2000
       })
-      putDrawers(installments?.installmentMonths[installments?.countMonths - 1]?.amountPerMonth)
+      putDrawers(installments?.installmentMonths[countMonths - 1]?.amountPerMonth)
     } else {
       Swal.fire({
         position: 'center',
@@ -167,99 +168,95 @@ function PaymentOfInstallments() {
     }
   }
 
+  const countMonths = customers[customerId]?.installments[installmentId]?.countMonths
   const amountPerMonth =
-    customers[customerId]?.installments[installmentId]?.installmentMonths[installments.countMonths]
+    customers[customerId]?.installments[installmentId]?.installmentMonths[countMonths]
       ?.amountPerMonth
 
   const onSubmit = (data) => {
-    if (parseFloat(data.amountPerMonth) == parseFloat(amountPerMonth)) {
-      payNowBtn()
-    } else if (
-      parseFloat(data.amountPerMonth) < parseFloat(amountPerMonth) ||
-      parseFloat(data.amountPerMonth) > parseFloat(amountPerMonth)
-    ) {
-      if (
-        customers[customerId].installments[installmentId].installmentPeriod !=
-        customers[customerId].installments[installmentId].countMonths + 1
+    const installment = customers[customerId]?.installments[installmentId]
+    if (countMonths < installment.installmentPeriod) {
+      if (parseFloat(data.amountPerMonth) == parseFloat(amountPerMonth)) {
+        payNowBtn()
+      } else if (
+        parseFloat(data.amountPerMonth) < parseFloat(amountPerMonth) ||
+        parseFloat(data.amountPerMonth) > parseFloat(amountPerMonth)
       ) {
-        customers[customerId].installments[installmentId].installmentMonths[
-          installments.countMonths + 1
-        ].amountPerMonth = (
-          parseFloat(
-            customers[customerId]?.installments[installmentId]?.installmentMonths[
-              installments.countMonths + 1
-            ]?.amountPerMonth
-          ) +
-          parseFloat(
-            customers[customerId]?.installments[installmentId]?.installmentMonths[
-              installments.countMonths
-            ]?.amountPerMonth
-          ) -
-          parseFloat(data.amountPerMonth)
-        ).toFixed(2)
-
-        customers[customerId].installments[installmentId].installmentMonths[
-          installments.countMonths
-        ].amountPerMonth = parseFloat(data.amountPerMonth)
-
-        customers[customerId].installments[installmentId].installmentMonths[
-          installments.countMonths
-        ].payed = true
-
-        customers[customerId].installments[installmentId].installmentMonths[
-          installments.countMonths
-        ].paydayDate = formattedDate
-
-        if (installments.installmentMonths[installments.countMonths].payed) {
-          customers[customerId].installments[installmentId].countMonths += 1
-        }
-        localStorage.setItem('customers', JSON.stringify(customers))
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'تم دفع القسط بنجاح',
-          showConfirmButton: false,
-          timer: 2000
-        })
-        putDrawers(watch('amountPerMonth'))
-      } else {
         if (
-          parseFloat(
-            customers[customerId]?.installments[installmentId]?.installmentMonths[
-              installments.countMonths
-            ]?.amountPerMonth
-          ) < parseFloat(data.amountPerMonth)
+          customers[customerId].installments[installmentId].installmentPeriod !=
+          customers[customerId].installments[installmentId].countMonths + 1
         ) {
-          Swal.fire({
-            position: 'center',
-            icon: 'error',
-            title: 'المبلغ دا اكبر من القسط الاخير',
-            showConfirmButton: false,
-            timer: 4000
-          })
-          putDrawers(watch('amountPerMonth'))
-        } else {
           customers[customerId].installments[installmentId].installmentMonths[
-            installments.countMonths
-          ].payed = true
+            countMonths + 1
+          ].amountPerMonth = (
+            parseFloat(
+              customers[customerId]?.installments[installmentId]?.installmentMonths[countMonths + 1]
+                ?.amountPerMonth
+            ) +
+            parseFloat(amountPerMonth) -
+            parseFloat(data.amountPerMonth)
+          ).toFixed(2)
 
           customers[customerId].installments[installmentId].installmentMonths[
-            installments.countMonths
+            countMonths
+          ].amountPerMonth = parseFloat(data.amountPerMonth)
+
+          customers[customerId].installments[installmentId].installmentMonths[
+            countMonths
           ].paydayDate = formattedDate
 
-          if (installments.installmentMonths[installments.countMonths].payed) {
-            customers[customerId].installments[installmentId].countMonths += 1
-          }
+          customers[customerId].installments[installmentId].installmentMonths[countMonths].payed =
+            true
+
+          customers[customerId].installments[installmentId].countMonths += 1
+
           localStorage.setItem('customers', JSON.stringify(customers))
           Swal.fire({
             position: 'center',
             icon: 'success',
-            title: 'تم دفع اخر قسط ',
+            title: 'تم دفع القسط بنجاح',
             showConfirmButton: false,
             timer: 2000
           })
+          putDrawers(watch('amountPerMonth'))
+        } else {
+          if (
+            parseFloat(
+              customers[customerId]?.installments[installmentId]?.installmentMonths[countMonths]
+                ?.amountPerMonth
+            ) < parseFloat(data.amountPerMonth)
+          ) {
+            Swal.fire({
+              position: 'center',
+              icon: 'error',
+              title: 'المبلغ دا اكبر من القسط الاخير',
+              showConfirmButton: false,
+              timer: 4000
+            })
+          } else if (
+            parseFloat(
+              customers[customerId]?.installments[installmentId]?.installmentMonths[countMonths]
+                ?.amountPerMonth
+            ) > parseFloat(data.amountPerMonth)
+          ) {
+            Swal.fire({
+              position: 'center',
+              icon: 'error',
+              title: 'المبلغ دا اصغر من القسط الاخير',
+              showConfirmButton: false,
+              timer: 4000
+            })
+          }
         }
       }
+    } else {
+      Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: 'القسط خلص خلاص',
+        showConfirmButton: false,
+        timer: 2000
+      })
     }
   }
 
@@ -346,15 +343,20 @@ function PaymentOfInstallments() {
 
                   <h4>
                     الشهر الحالي :
-                    {installments?.installmentMonths[installments.countMonths]?.amountPerMonth
-                      ? installments?.installmentMonths[installments.countMonths]?.amountPerMonth
+                    {installments?.installmentMonths[countMonths]?.amountPerMonth
+                      ? installments?.installmentMonths[countMonths]?.amountPerMonth
                       : ' القسط خلص'}
                   </h4>
 
                   <div className="flex items-center mt-5">
                     <button
                       disabled={watch('amountPerMonth') == '' ? false : true}
-                      onClick={payNowBtn}
+                      onClick={() => {
+                        payNowBtn()
+                        setTimeout(() => {
+                          setBtn(!btn)
+                        }, 100)
+                      }}
                       className={` py-2 px-2 border ${watch('amountPerMonth') != '' && 'border-gray-600 text-gray-600'} rounded-md me-4`}
                     >
                       المبلغ كامل
@@ -370,11 +372,15 @@ function PaymentOfInstallments() {
                 </div>
               )}
             </div>
-
             <button
               disabled={watch('amountPerMonth') == '' ? true : false}
               className={`mb-20 mx-auto py-2 px-2 border ${watch('amountPerMonth') == '' && 'border-gray-600 text-gray-600'} rounded-md`}
               type="submit"
+              onClick={() => {
+                setTimeout(() => {
+                  setBtn(!btn)
+                }, 100)
+              }}
             >
               ادفع
             </button>

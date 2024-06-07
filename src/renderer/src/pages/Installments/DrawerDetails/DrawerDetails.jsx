@@ -70,7 +70,7 @@ function DrawerDetails() {
   let total = 0
 
   drawers[drawerId]?.installment?.map((installment) => (sum += Number(installment.currentMonth)))
-  drawers[drawerId]?.downPayment.map((downPayment) => (sum += Number(downPayment.downPayment)))
+  drawers[drawerId]?.downPayment?.map((downPayment) => (sum += Number(downPayment.downPayment)))
   drawers[drawerId]?.drawer?.map((dr) => (other += Number(dr.price)))
 
   total = sum - other
@@ -150,7 +150,7 @@ function DrawerDetails() {
                   <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]"> يوم الدفع </h3>
                   <h3 className="py-2 ps-2 basis-[10%]"> تاريخ الشراء </h3>
                 </div>
-                {drawers[drawerId]?.downPayment.map((downPayment) => (
+                {drawers[drawerId]?.downPayment?.map((downPayment) => (
                   <div
                     key={downPayment?.customer_id}
                     className="mx-6 border border-black px-2 flex font-semibold "
