@@ -23,35 +23,8 @@ function Latecomers() {
 
   useEffect(() => {
     const cust = []
-    const cust1 = []
-
-    if (cust.length == 0) {
-      customers?.map((customer) => {
-        if (customer?.installments) {
-          cust.push({
-            customer_id: customer.customer_id,
-            name: customer.name,
-            installments: customer?.installments
-              ?.filter(
-                (installment) => installment.countMonths != Number(installment.installmentPeriod)
-              )
-              .map((installment) => {
-                return {
-                  installment_id: installment.installment_id,
-                  installmentName: installment.installmentName,
-                  itemName: installment.itemName,
-                  installmentMonths: installment?.installmentMonths?.map((installmentMonth) => {
-                    return { month: installmentMonth.month, payed: installmentMonth.payed }
-                  })
-                }
-              })
-          })
-        }
-      })
-    }
-
-    cust?.map((customer) => {
-      cust1.push({
+    customers?.map((customer) => {
+      cust.push({
         customer_id: customer.customer_id,
         name: customer.name,
         installments: customer?.installments?.map((installment) => {
@@ -68,9 +41,8 @@ function Latecomers() {
         })
       })
     })
-
-    localStorage.setItem('latecomers', JSON.stringify(cust1))
-    setLatecomers(cust1)
+    localStorage.setItem('latecomers', JSON.stringify(cust))
+    setLatecomers(cust)
   }, [])
   return (
     <div className="h-screen px-20 pt-20">

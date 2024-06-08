@@ -143,7 +143,8 @@ function PaymentOfInstallments() {
         showConfirmButton: false,
         timer: 2000
       })
-      putDrawers(installments?.installmentMonths[countMonths - 1]?.amountPerMonth)
+
+      putDrawers(installments?.installmentMonths[countMonths]?.amountPerMonth)
     } else {
       Swal.fire({
         position: 'center',
@@ -156,7 +157,6 @@ function PaymentOfInstallments() {
   }
 
   const countMonths = customers[customerId]?.installments?.[installmentId]?.countMonths
-  console.log('customers[customerId]: ', customers[customerId])
 
   const amountPerMonth =
     customers[customerId]?.installments?.[installmentId]?.installmentMonths[countMonths]
@@ -185,20 +185,15 @@ function PaymentOfInstallments() {
             parseFloat(amountPerMonth) -
             parseFloat(data.amountPerMonth)
           ).toFixed(2)
-
           customers[customerId].installments[installmentId].installmentMonths[
             countMonths
           ].amountPerMonth = parseFloat(data.amountPerMonth)
-
           customers[customerId].installments[installmentId].installmentMonths[
             countMonths
           ].paydayDate = formattedDate
-
           customers[customerId].installments[installmentId].installmentMonths[countMonths].payed =
             true
-
           customers[customerId].installments[installmentId].countMonths += 1
-
           localStorage.setItem('customers', JSON.stringify(customers))
           Swal.fire({
             position: 'center',

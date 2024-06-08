@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 import { useLocation } from 'react-router-dom'
 import BackButtoon from '../../../components/BackButtoon'
 import { useEffect, useState, useRef } from 'react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
+import { array } from 'yup'
 
 function DrawerDetails() {
   const componentRef = useRef()
@@ -42,8 +44,7 @@ function DrawerDetails() {
 
     const newWidth = imgWidth * ratio
     const newHeight = imgHeight * ratio
-    console.log(newWidth)
-    console.log(newHeight)
+
     const imgX = 0
     const imgY = 0
 
@@ -53,7 +54,6 @@ function DrawerDetails() {
 
   // eslint-disable-next-line no-unused-vars
   const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
-  console.log(drawers)
   let { state } = useLocation()
   const [drawerId, setDrawerId] = useState()
 
@@ -85,51 +85,49 @@ function DrawerDetails() {
             {drawers[drawerId]?.installment && (
               <div className="الاقساط">
                 <h3 className="mb-3 ms-6 text-lg font-medium"> الأقساط : </h3>
-                <div className={`mx-6 border border-black px-2 flex font-semibold `}>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">كود العميل</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">اسم العميل</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">اسم القسط</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">تاريخ الشراء</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]"> يوم الدفع </h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]"> عدد الشهور</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                <div className={`mx-6 border border-black px-2 flex font-semibold w-fit `}>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[85px]">كود العميل</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px] ">اسم العميل</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px] ">اسم القسط</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[100px] ">تاريخ الشراء</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[75px]"> يوم الدفع </h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[85px] "> عدد الشهور</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[110px] ">
                     الشهور المتبقية
                   </h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                    المبلغ الشهري
-                  </h3>
-                  <h3 className="py-2 ps-2 basis-[10%]"> المدفوغ </h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[110px] ">المبلغ الشهري</h3>
+                  <h3 className="py-2 ps-2 w-[110px]"> المدفوع </h3>
                 </div>
                 {drawers[drawerId]?.installment?.map((installment) => (
                   <div
                     key={installment.customer_id}
-                    className="mx-6 border border-black px-2 flex font-semibold "
+                    className="mx-6 border border-black px-2 flex font-semibold w-fit"
                   >
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[85px]">
                       {installment.customer_id}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px]">
                       {installment.name}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px]">
                       {installment.installmentName}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[100px]">
                       {installment.dateOfPurchase}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[75px]">
                       {installment.payday}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2  w-[85px]">
                       {installment.installmentPeriod}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[110px]">
                       {installment.remainingMonths}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[110px]">
                       {installment.amountPerMonth}
                     </h3>
-                    <h3 className="py-2 ps-2 basis-[10%]">{installment.currentMonth}</h3>
+                    <h3 className="py-2 ps-2 w-[110px]">{installment.currentMonth}</h3>
                   </div>
                 ))}
               </div>
@@ -138,46 +136,44 @@ function DrawerDetails() {
             {drawers[drawerId]?.downPayment && (
               <div className="المقدم mt-20">
                 <h3 className="mb-3 ms-6 text-lg font-medium"> المقدم : </h3>
-                <div className="mx-6 border border-black px-2 flex font-semibold ">
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">كود العميل</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">اسم العميل</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">اسم القسط</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">مقدم</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
-                    المبلغ الشهري
-                  </h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]"> عدد الشهور</h3>
-                  <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]"> يوم الدفع </h3>
-                  <h3 className="py-2 ps-2 basis-[10%]"> تاريخ الشراء </h3>
+                <div className="mx-6 border border-black px-2 flex font-semibold w-fit">
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[85px]">كود العميل</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px]">اسم العميل</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px]">اسم القسط</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[100px]">مقدم</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[110px]">المبلغ الشهري</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[85px]"> عدد الشهور</h3>
+                  <h3 className="py-2 border-l border-black pe-2 me-2 w-[75px]"> يوم الدفع </h3>
+                  <h3 className="py-2 ps-2 w-[100px]"> تاريخ الشراء </h3>
                 </div>
                 {drawers[drawerId]?.downPayment?.map((downPayment) => (
                   <div
                     key={downPayment?.customer_id}
-                    className="mx-6 border border-black px-2 flex font-semibold "
+                    className="mx-6 border border-black px-2 flex font-semibold w-fit"
                   >
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[85px]">
                       {downPayment?.customer_id}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px]">
                       {downPayment?.name}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[230px]">
                       {downPayment?.installmentName}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2  w-[100px]">
                       {downPayment?.downPayment}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2  w-[110px]">
                       {downPayment?.amountPerMonth}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[85px]">
                       {downPayment?.installmentPeriod}
                     </h3>
-                    <h3 className="py-2 border-l border-black pe-2 me-2 basis-[10%]">
+                    <h3 className="py-2 border-l border-black pe-2 me-2 w-[75px]">
                       {downPayment?.payday}
                     </h3>
 
-                    <h3 className="py-2 ps-2 basis-[10%]">{downPayment?.dateOfPurchase}</h3>
+                    <h3 className="py-2 ps-2 w-[100px]">{downPayment?.dateOfPurchase}</h3>
                   </div>
                 ))}
               </div>
