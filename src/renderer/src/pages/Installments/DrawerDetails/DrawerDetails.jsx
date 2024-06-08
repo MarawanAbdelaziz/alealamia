@@ -4,7 +4,6 @@ import BackButtoon from '../../../components/BackButtoon'
 import { useEffect, useState, useRef } from 'react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
-import { array } from 'yup'
 
 function DrawerDetails() {
   const componentRef = useRef()
@@ -22,10 +21,7 @@ function DrawerDetails() {
 
     applyTemporaryStyles(element)
 
-    const width = element.offsetWidth
-    const height = element.offsetHeight
-
-    const canvas = await html2canvas(element, { width, height, scale: 2 })
+    const canvas = await html2canvas(element, { scale: 2 })
     const imgData = canvas.toDataURL('image/png')
 
     revertTemporaryStyles(element)
@@ -33,26 +29,40 @@ function DrawerDetails() {
     const pdf = new jsPDF('p', 'mm', 'a4')
     const pdfWidth = pdf.internal.pageSize.getWidth()
     const pdfHeight = pdf.internal.pageSize.getHeight()
+    const imgWidth = pdfWidth
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width
 
-    const imgWidth = canvas.width
-    const imgHeight = canvas.height
+    let position = 0
+    while (position < imgHeight) {
+      const pageCanvas = document.createElement('canvas')
+      const pageContext = pageCanvas.getContext('2d')
+      pageCanvas.width = canvas.width
+      pageCanvas.height = canvas.height
 
-    const widthRatio = pdfWidth / imgWidth
-    const heightRatio = pdfHeight / imgHeight
+      pageContext.drawImage(
+        canvas,
+        0,
+        position * (canvas.width / imgWidth),
+        canvas.width,
+        canvas.height,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      )
 
-    const ratio = Math.min(widthRatio, heightRatio)
+      const pageImgData = pageCanvas.toDataURL('image/png')
+      pdf.addImage(pageImgData, 'PNG', 0, 0, imgWidth, imgHeight)
+      position += pdfHeight
 
-    const newWidth = imgWidth * ratio
-    const newHeight = imgHeight * ratio
+      if (position < imgHeight) {
+        pdf.addPage()
+      }
+    }
 
-    const imgX = 0
-    const imgY = 0
-
-    pdf.addImage(imgData, 'PNG', imgX, imgY, newWidth, newHeight)
     pdf.save(`درج بتاريخ ${drawers[drawerId]?.date}.pdf`)
   }
 
-  // eslint-disable-next-line no-unused-vars
   const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
   let { state } = useLocation()
   const [drawerId, setDrawerId] = useState()
@@ -76,9 +86,9 @@ function DrawerDetails() {
   total = sum - other
 
   return (
-    <div className="bg-white text-black">
+    <div className="bg-white  w-fit mx-auto">
       <BackButtoon data={'/installments'} />
-      <div className="pt-28 py-10 ">
+      <div className="pt-28 py-10 text-black ">
         <div ref={componentRef} className="h-fit">
           <h2 className="text-2xl mb-10 text-center">تاريخ اليوم : {drawers[drawerId]?.date} </h2>
           <div className="mb-5">
