@@ -13,6 +13,7 @@ function AddInstallments() {
   const [total, setTotal] = useState()
   const [amountPerMonth, setAmountPerMonth] = useState()
   const [currentDate, setCurrentDate] = useState('')
+  const [firstInstallmentDate, setFirstInstallmentDate] = useState('')
   const [search, setSearch] = useState('')
   const [errorCode, setErrorCode] = useState(false)
   const [randomNum, setRandomNum] = useState()
@@ -134,6 +135,7 @@ function AddInstallments() {
       total: '',
       payday: '',
       dateOfPurchase: '',
+      firstInstallmentDate: '',
       firstGuarantor: '',
       secondGuarantor: '',
       thirdGuarantor: '',
@@ -143,7 +145,7 @@ function AddInstallments() {
 
   const onSubmit = (data) => {
     const installmentMonths = []
-    const initialDate = new Date(data.dateOfPurchase)
+    const initialDate = new Date(data.firstInstallmentDate)
 
     for (let i = 1; i <= Number(data.installmentPeriod); i++) {
       const newDate = new Date(initialDate)
@@ -227,7 +229,12 @@ function AddInstallments() {
     } else {
       setValue('dateOfPurchase', formattedDate)
     }
-  }, [watch('dateOfPurchase')])
+    if (watch('firstInstallmentDate')) {
+      setFirstInstallmentDate(watch('firstInstallmentDate'))
+    } else {
+      setValue('firstInstallmentDate', formattedDate)
+    }
+  }, [watch('dateOfPurchase'), watch('firstInstallmentDate')])
 
   function randomIntDrawer(min, max) {
     return Math.floor(Math.random() * (max - min)) + min
@@ -428,6 +435,16 @@ function AddInstallments() {
                 type="date"
                 value={currentDate}
                 {...register('dateOfPurchase')}
+              />
+            </div>
+
+            <div className="flex">
+              <h3> اول قسط : </h3>
+              <input
+                className="ms-4 bg-transparent border rounded-md py-0.5 px-2 focus:outline-none"
+                type="date"
+                value={firstInstallmentDate}
+                {...register('firstInstallmentDate')}
               />
             </div>
             <input

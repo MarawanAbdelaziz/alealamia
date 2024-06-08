@@ -102,7 +102,7 @@ function AddToDrawer() {
 
   return (
     <div>
-      <h2 className="mt-10 text-2xl">اضف الي الدرج</h2>
+      <h2 className="mt-10 text-2xl">اضافه مصاريف</h2>
       <div className="w-[60%] ms-32">
         <form onSubmit={handleSubmit(onSubmit)}>
           <input

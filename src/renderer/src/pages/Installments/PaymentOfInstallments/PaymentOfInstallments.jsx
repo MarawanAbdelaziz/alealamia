@@ -4,20 +4,17 @@ import { useForm } from 'react-hook-form'
 import Swal from 'sweetalert2'
 
 function PaymentOfInstallments() {
-  const [customers, setCustomers] = useState([])
-  const [customersWithInstallments, setCustomersWithInstallments] = useState([])
+  const [customers, setCustomers] = useState(JSON.parse(localStorage.getItem('customers')) || [])
   const [customerId, setCustomerId] = useState()
   const [installmentId, setInstallmentId] = useState()
   const [search, setSearch] = useState('')
   const [btn, setBtn] = useState('')
   const [drawers, setDrawers] = useState(JSON.parse(localStorage.getItem('drawers')) || [])
-
   const [currentDay, setCurrentDay] = useState('')
   const [firstDay, setFirstDay] = useState(JSON.parse(localStorage.getItem('firstDay')) || '')
   const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
   const [randomNum, setRandomNum] = useState()
   const [currentDate, setCurrentDate] = useState('')
-  const [currentMonth, setCurrentMonth] = useState('')
 
   const now = new Date()
   function formatDate(date) {
@@ -26,19 +23,13 @@ function PaymentOfInstallments() {
     const year = date.getFullYear()
     return `${year}-${month}-${day}`
   }
+
   const formattedDate = formatDate(now)
   const nextDay = new Date(now)
   nextDay.setDate(now.getDate() + 1)
   const formattedNewDate = formatDate(nextDay)
 
   useEffect(() => {
-    const storedCustomers = JSON.parse(localStorage.getItem('customers') || [])
-    setCustomers(storedCustomers)
-    const filteredCustomers = storedCustomers.filter(
-      (customer) => customer.installments && customer.installments.length > 0
-    )
-    setCustomersWithInstallments(filteredCustomers)
-
     setCurrentDay(formattedDate)
     if (firstDay == '') {
       setFirstDay(formattedDate)
@@ -64,35 +55,31 @@ function PaymentOfInstallments() {
   }
 
   useEffect(() => {
-    const storedCustomers = JSON.parse(localStorage.getItem('customers') || [])
-    const filteredCustomers = storedCustomers.filter(
-      (customer) => customer.installments && customer.installments.length > 0
-    )
-    setCustomersWithInstallments(filteredCustomers)
+    setCustomers(JSON.parse(localStorage.getItem('customers')) || [])
     randomFun()
   }, [btn])
 
   function getCustomer(id) {
-    const newId = customersWithInstallments.findIndex((customer) => customer.customer_id == id)
+    const newId = customers.findIndex((customer) => customer.customer_id == id)
     setCustomerId(newId)
   }
 
   function getInstallment(id) {
-    const newId = customersWithInstallments[customerId]?.installments?.findIndex(
+    const newId = customers[customerId]?.installments?.findIndex(
       (installment) => installment.installment_id == id
     )
     setInstallmentId(newId)
   }
 
-  const installments = customersWithInstallments[customerId]?.installments[installmentId]
+  const installments = customers[customerId]?.installments[installmentId]
 
   const { watch, register, handleSubmit } = useForm({
     defaultValues: { amountPerMonth: '' }
   })
 
   const data = {
-    customer_id: customersWithInstallments[customerId]?.customer_id,
-    name: customersWithInstallments[customerId]?.name,
+    customer_id: customers[customerId]?.customer_id,
+    name: customers[customerId]?.name,
     installmentName: installments?.installmentName,
     dateOfPurchase: installments?.dateOfPurchase,
     payday: installments?.payday,
@@ -168,9 +155,11 @@ function PaymentOfInstallments() {
     }
   }
 
-  const countMonths = customers[customerId]?.installments[installmentId]?.countMonths
+  const countMonths = customers[customerId]?.installments?.[installmentId]?.countMonths
+  console.log('customers[customerId]: ', customers[customerId])
+
   const amountPerMonth =
-    customers[customerId]?.installments[installmentId]?.installmentMonths[countMonths]
+    customers[customerId]?.installments?.[installmentId]?.installmentMonths[countMonths]
       ?.amountPerMonth
 
   const onSubmit = (data) => {
@@ -285,8 +274,9 @@ function PaymentOfInstallments() {
                   <option className="hidden" value="" disabled>
                     اختار عميلك
                   </option>
-                  {customersWithInstallments
-                    ?.filter((customer) =>
+                  {customers
+                    .filter((customer) => customer.installments && customer.installments.length > 0)
+                    .filter((customer) =>
                       customer.name.toLowerCase().includes(search.toLocaleLowerCase())
                     )
                     .map((customer) => (
@@ -302,8 +292,8 @@ function PaymentOfInstallments() {
               </div>
               <h4 className="mt-5">
                 كود العميل :
-                {customersWithInstallments[customerId]?.customer_id
-                  ? ` ${customersWithInstallments[customerId]?.customer_id}`
+                {customers[customerId]?.customer_id
+                  ? ` ${customers[customerId]?.customer_id}`
                   : ' 0'}
               </h4>
             </div>
@@ -322,7 +312,7 @@ function PaymentOfInstallments() {
                   <option className="hidden" value="" disabled>
                     اختار القسط
                   </option>
-                  {customersWithInstallments[customerId]?.installments?.map((installment) => (
+                  {customers[customerId]?.installments?.map((installment) => (
                     <option
                       className="bg-black "
                       key={installment.installment_id}

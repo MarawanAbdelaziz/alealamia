@@ -162,7 +162,7 @@ function WasalAmanahh() {
             />
 
             <div className="flex">
-              <h3> تاريخ الشراء : </h3>
+              <h3> تاريخ اضافه الوصل : </h3>
               <input
                 className="ms-4 bg-transparent border rounded-md py-0.5 px-2 focus:outline-none"
                 type="date"

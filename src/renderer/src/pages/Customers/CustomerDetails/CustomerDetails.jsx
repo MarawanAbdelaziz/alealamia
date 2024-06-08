@@ -125,17 +125,17 @@ function CustomerDetails() {
 
             <div>
               <h3 className="mb-3 ms-6 text-lg font-medium mt-10 "> الضامنين : </h3>
-              <div className="mx-6 border w-[45%] px-2 flex font-semibold">
-                <h3 className="py-2 border-l pe-2 me-2 basis-[20%]">كود</h3>
+              <div className="mx-6 border w-[60%] px-2 flex font-semibold">
+                <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">كود</h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[20%]">الضامن الاول</h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[20%]">الضامن الثاني</h3>
                 <h3 className="py-2 border-l pe-2 me-2 basis-[20%]">الضامن الثالث</h3>
                 <h3 className="py-2  pe-2 me-2 basis-[20%]">الضامن الرابع</h3>
               </div>
               {customers[customerId]?.installments &&
-                customers[customerId].installments?.map((installment) => (
-                  <div key={installment.installment_id} className="mx-6 border w-[45%] px-2 flex">
-                    <h3 className="py-2 border-l pe-2 me-2 basis-[20%]">
+                customers[customerId]?.installments?.map((installment) => (
+                  <div key={installment.installment_id} className="mx-6 border w-[60%] px-2 flex">
+                    <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">
                       {installment.installment_id}
                     </h3>
                     <h3 className="py-2 border-l pe-2 me-2 basis-[20%]">
@@ -239,7 +239,7 @@ function CustomerDetails() {
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">كود</h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">اسم البلد</h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">رقم الدفتر</h3>
-                  <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">تاريخ الشراء </h3>
+                  <h3 className="py-2 border-l pe-2 me-2 basis-[10%]"> تاريخ الاضافه </h3>
                   <h3 className="py-2 border-l pe-2 me-2 basis-[10%]">تفاصيل</h3>
                 </div>
               </div>
