@@ -267,7 +267,7 @@ function CustomerDetails() {
                   }}
                   className="border border-red-600 rounded-md my-2 ms-auto py-1 px-2"
                 >
-                  امسح القسط
+                  امسح الوصل
                 </button>
               </div>
             ))}
