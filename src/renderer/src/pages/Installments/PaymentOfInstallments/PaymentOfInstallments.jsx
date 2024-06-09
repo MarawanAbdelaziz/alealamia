@@ -15,6 +15,7 @@ function PaymentOfInstallments() {
   const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
   const [randomNum, setRandomNum] = useState()
   const [currentDate, setCurrentDate] = useState('')
+  const [putInDrawers, setPutInDrawers] = useState(true)
 
   const now = new Date()
   function formatDate(date) {
@@ -143,8 +144,9 @@ function PaymentOfInstallments() {
         showConfirmButton: false,
         timer: 2000
       })
-
-      putDrawers(installments?.installmentMonths[countMonths]?.amountPerMonth)
+      if (putInDrawers) {
+        putDrawers(installments?.installmentMonths[countMonths]?.amountPerMonth)
+      }
     } else {
       Swal.fire({
         position: 'center',
@@ -202,7 +204,9 @@ function PaymentOfInstallments() {
             showConfirmButton: false,
             timer: 2000
           })
-          putDrawers(watch('amountPerMonth'))
+          if (putInDrawers) {
+            putDrawers(watch('amountPerMonth'))
+          }
         } else {
           if (
             parseFloat(
@@ -350,13 +354,20 @@ function PaymentOfInstallments() {
                     <input
                       className={`py-2 px-3 ms-4 focus:outline-none bg-transparent border rounded-md placeholder:text-white`}
                       placeholder="مبلغ اخر"
-                      type="text"
+                      type="number"
+                      step="0.1"
                       {...register('amountPerMonth')}
                     />
                   </div>
                 </div>
               )}
             </div>
+            <label
+              onClick={() => setPutInDrawers(!putInDrawers)}
+              className={` py-2 w-[20%] mt-5 px-2 border ${putInDrawers ? 'border-green-500' : 'border-red-500'} text-center  cursor-pointer rounded-md me-4`}
+            >
+              احفظ في الدرج
+            </label>
             <button
               disabled={watch('amountPerMonth') == '' ? true : false}
               className={`mb-20 mx-auto py-2 px-2 border ${watch('amountPerMonth') == '' && 'border-gray-600 text-gray-600'} rounded-md`}

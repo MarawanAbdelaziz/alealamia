@@ -21,6 +21,7 @@ function AddInstallments() {
   const [currentDay, setCurrentDay] = useState('')
   const [firstDay, setFirstDay] = useState(JSON.parse(localStorage.getItem('firstDay')) || '')
   const [newDay, setNewDay] = useState(JSON.parse(localStorage.getItem('newDay')) || '')
+  const [putInDrawers, setPutInDrawers] = useState(true)
 
   const now = new Date()
   function formatDate(date) {
@@ -178,7 +179,7 @@ function AddInstallments() {
         timer: 1500
       })
 
-      if (data.downPayment) {
+      if (data.downPayment && putInDrawers) {
         putDrawers({
           customer_id: customers[customerId].customer_id,
           name: customers[customerId].name,
@@ -472,6 +473,12 @@ function AddInstallments() {
               type="text"
               {...register('fourthGuarantor')}
             />
+            <label
+              onClick={() => setPutInDrawers(!putInDrawers)}
+              className={` py-2 w-[20%] mt-5 px-2 border ${putInDrawers ? 'border-green-500' : 'border-red-500'} text-center cursor-pointer rounded-md me-4`}
+            >
+              احفظ في الدرج
+            </label>
             <button
               disabled={errors.name ? true : false}
               onClick={() => randomFun(customerId)}
